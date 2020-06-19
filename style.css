@@ -1,0 +1,15 @@
+
+.game-row {
+    margin: 0px auto;
+    line-height: 0px;
+    /* overflow: visible; */
+    white-space: nowrap;
+    text-align: center;
+}
+
+.game-square {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    border: 1px solid rgba(1,1,1,0.1);
+}
