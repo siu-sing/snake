@@ -1,4 +1,8 @@
 
+#game-board {
+    /* border: 2px solid black; */
+}
+
 .game-row {
     margin: 0px auto;
     line-height: 0px;

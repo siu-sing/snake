@@ -45,18 +45,55 @@ let snake = {
     }
 };
 
+let apple = {
+    position: {
+        i:null,
+        j:null
+    },
+    resetPosition: function(){
+        this.position.i = Math.floor(Math.random()*gridSize);
+        this.position.j = Math.floor(Math.random()*gridSize);
+    }
+}
+apple.resetPosition();
+
+//Set apple display
+let setAppleDisplay = function() {
+    let n = getSquareNode(apple.position.i,apple.position.j);
+    n.style.backgroundColor = "red";
+}
+
+//Clear apple display
+let clearAppleDisplay = function() {
+    let n = getSquareNode(apple.position.i,apple.position.j);
+    n.style.backgroundColor = "transparent";
+}
+
+//Returns true if snake is at apple
+let isAtApple = function(){
+    if(snake.position[0]===apple.position.i
+        && snake.position[1]===apple.position.j){
+            return true;
+        } else {
+            return false;
+        }
+}
+
 //Check if snake is out of bounds
-let isSnakeOOB = function(){
+let isSnakeOOB = function () {
     if (snake.position[0] > gridSize - 1 //east border
-        || snake.position[0] < 0 //west border
-        || snake.position[1] > gridSize - 1 //south border
-        || snake.position[1] < 0 //north border
-    ){
+        ||
+        snake.position[0] < 0 //west border
+        ||
+        snake.position[1] > gridSize - 1 //south border
+        ||
+        snake.position[1] < 0 //north border
+    ) {
         return true;
     } else {
         return false;
     }
-        
+
 }
 
 //Get square from coordinates
@@ -71,18 +108,26 @@ n.style.backgroundColor = "black";
 //Function that refreshes and updates snake position every clock
 let moveSnake = function () {
     let interval = setInterval(moveSnake, clock);
-
     function moveSnake() {
-        console.log("snake coord:"+snake.position)
-        //If snake out of bounds
-        if (isSnakeOOB()) {
+        //Update snake position
+        // console.log("snake coord:"+snake.position)
+        let currSquare = getSquareNode(snake.position[0], snake.position[1])
+        //Display apple
+        setAppleDisplay();
+        snake.move();
+        //If snake OOB, stop interval
+        if (isSnakeOOB()) { 
             console.log("snake OOB");
             clearInterval(interval);
-            return;
         } else {
-            //Move the snake
-            getSquareNode(snake.position[0], snake.position[1]).style.backgroundColor = "transparent";
-            snake.move();
+            //update display
+        
+            //if hit apple
+            if(isAtApple()){
+                clearAppleDisplay();
+                apple.resetPosition();
+            }
+            currSquare.style.backgroundColor = "transparent"
             getSquareNode(snake.position[0], snake.position[1]).style.backgroundColor = "black";
         }
     }
@@ -91,7 +136,7 @@ let moveSnake = function () {
 //Get middle square
 let startDisp = getSquareNode(start_i - 3, start_j * 2);
 //Set start display
-let setStartDisplay = function () {    
+let setStartDisplay = function () {
     let dispP = document.createElement("p");
     //Set styles
     startDisp.style.lineHeight = "0";
@@ -104,18 +149,19 @@ let setStartDisplay = function () {
 }
 
 //Clear start display
-let clearStartDisplay = function(){
-    startDisp.innerHTML="";
+let clearStartDisplay = function () {
+    startDisp.innerHTML = "";
 }
 
 setStartDisplay();
 
 //On space bar hit, clear start display, and begin moving snake.
-let startGame = function() {
+let startGame = function () {
     document.addEventListener("keyup", spaceBarHit)
-    function spaceBarHit(){
+
+    function spaceBarHit() {
         //space bar is 32
-        if(event.keyCode===32){
+        if (event.keyCode === 32) {
             clearStartDisplay();
             moveSnake();
         }
@@ -124,34 +170,31 @@ let startGame = function() {
 startGame();
 
 //Set snake direction: e,n,w,s
-let setSnakeDirection = function(dir){
+let setSnakeDirection = function (dir) {
     snake.direction = dir;
 }
 
 //Assign keyboard controls
 let setControls = function () {
     document.addEventListener("keyup", arrowHit)
-    function arrowHit(){
-        console.log("key hit")
-        console.log(event.keyCode)
-        switch(event.keyCode){
+
+    function arrowHit() {
+        console.log("arrow hit")
+        switch (event.keyCode) {
             case 39: //east
-            setSnakeDirection("e");
-            break;
+                setSnakeDirection("e");
+                break;
             case 38: //north
-            setSnakeDirection("n");
-            break;
+                setSnakeDirection("n");
+                break;
             case 37: //west
-            setSnakeDirection("w");
-            break;
+                setSnakeDirection("w");
+                break;
             case 40: //south
-            setSnakeDirection("s");
-            break;
+                setSnakeDirection("s");
+                break;
         }
     }
 }
 
 setControls();
-
-
-
