@@ -31,9 +31,9 @@ let snake = {
     move: function () {
 
         //For each segment of the snake, update to next segment
-        for (let x = this.position.length - 1; x > 0 ; x--) {
-            this.position[x].i = this.position[x-1].i
-            this.position[x].j = this.position[x-1].j
+        for (let x = this.position.length - 1; x > 0; x--) {
+            this.position[x].i = this.position[x - 1].i
+            this.position[x].j = this.position[x - 1].j
         }
 
         //For the head of the snake
@@ -51,10 +51,14 @@ let snake = {
                 this.position[0].i++;
                 break;
         }
-        
+
     },
-    setDirection: function(d){
+    setDirection: function (d) {
         this.direction = d;
+    },
+    pushSeg: function (seg) {
+        //Add one more unit to tail
+        this.position.push(seg);
     }
 };
 
@@ -64,69 +68,45 @@ let start_j = Math.floor(gridSize / 4)
 
 //Push 3 units into position array
 for (let x = 0; x < startLength; x++) {
-    snake.position.push({i: start_i, j: start_j})
+    snake.position.push({
+        i: start_i,
+        j: start_j
+    })
     start_j--;
 };
 
-
-
-// let snake = {
-//     position: [start_i, start_j],
-//     direction: "e",
-//     //Function that updates the position of the snake based on its current direction
-//     move: function () {
-//         switch (this.direction) {
-//             case "e":
-//                 this.position[1]++;
-//                 break;
-//             case "n":
-//                 this.position[0]--;
-//                 break;
-//             case "w":
-//                 this.position[1]--;
-//                 break;
-//             case "s":
-//                 this.position[0]++;
-//                 break;
-//         }
-//     },
-//     setDirection: function(d){
-//         this.direction = d;
-//     }
-// };
-
 let apple = {
     position: {
-        i:null,
-        j:null
+        i: null,
+        j: null
     },
-    resetPosition: function(){
-        this.position.i = Math.floor(Math.random()*gridSize);
-        this.position.j = Math.floor(Math.random()*gridSize);
+    resetPosition: function () {
+        this.position.i = Math.floor(Math.random() * gridSize);
+        this.position.j = Math.floor(Math.random() * gridSize);
     }
 }
 apple.resetPosition();
 
 //Set apple display
-let setAppleDisplay = function() {
-    let n = getSquareNode(apple.position.i,apple.position.j);
+let setAppleDisplay = function () {
+    let n = getSquareNode(apple.position.i, apple.position.j);
     n.style.backgroundColor = "red";
 }
 
 //Clear apple display
-let clearAppleDisplay = function() {
-    let n = getSquareNode(apple.position.i,apple.position.j);
+let clearAppleDisplay = function () {
+    let n = getSquareNode(apple.position.i, apple.position.j);
     n.style.backgroundColor = "transparent";
 }
 
 //Returns true if snake is at apple
-let isAtApple = function(){
-    if(snake.position[0].i===apple.position.i
-        && snake.position[0].j===apple.position.j){
-            return true;
-        } else {
-            return false;
-        }
+let isAtApple = function () {
+    if (snake.position[0].i === apple.position.i &&
+        snake.position[0].j === apple.position.j) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 //Check if snake is out of bounds
@@ -146,24 +126,49 @@ let isSnakeOOB = function () {
 
 }
 
+//Check if snake runs into itself
+let isSnakeHitSelf = function () {
+    //Snake going into itself
+    // happens when head of snake equals 3rd seg of snake 
+    // if (snake.position[0].i === snake.position[2].i &&
+    //     snake.position[0].j === snake.position[2].j) {
+    //     return true;
+    // } else {
+    //     return false;
+    // }
+    //check if head coordinates equal to any in its own array other than itself
+    let headSeg = {
+        i: snake.position[0].i,
+        j: snake.position[0].j
+    }
+    let hitItself = false;
+    for (let x = 1; x < snake.position.length; x++) {
+        if (headSeg.i === snake.position[x].i 
+            && headSeg.j === snake.position[x].j){
+                hitItself = true;
+            }
+    }
+    return hitItself;
+}
+
 //Get square from coordinates
 let getSquareNode = function (i, j) {
     return document.getElementById("game-board").children[i].children[j]
 }
 
 //Set snake
-let setSnakeDisplay = function(){
+let setSnakeDisplay = function () {
     snake.position.forEach(seg => {
-        let n = getSquareNode(seg.i,seg.j);
+        let n = getSquareNode(seg.i, seg.j);
         n.style.backgroundColor = "black"
     });
 }
 setSnakeDisplay();
 
 //Copies original array and returns the new copy
-let copyPosArray = function(original){
+let copyPosArray = function (original) {
     let crispy = [];
-    for(x = 0; x < original.length; x++){
+    for (x = 0; x < original.length; x++) {
         crispy[x] = {
             i: original[x].i,
             j: original[x].j
@@ -172,45 +177,63 @@ let copyPosArray = function(original){
     return crispy;
 }
 
-let clearSnakeDisplay = function(posArray){
+//clears snake display of given position array
+let clearSnakeDisplay = function (posArray) {
     posArray.forEach(seg => {
-        let n = getSquareNode(seg.i,seg.j);
+        let n = getSquareNode(seg.i, seg.j);
         n.style.backgroundColor = "transparent"
     });
+}
+
+//Get last segment object of given position array
+let getLastSeg = function (posArray) {
+    let seg = {
+        i: null,
+        j: null
+    }
+
+    seg.i = posArray[posArray.length - 1].i;
+    seg.j = posArray[posArray.length - 1].j;
+
+    return seg;
 }
 
 
 //----------------MAIN GAME FLOW
 //Refresh and update snake position every clock
 let moveSnake = function () {
-    
+
     let interval = setInterval(moveSnake, clock);
-    
+
     function moveSnake() {
-    
+
         //Make a copy of the snake position array
         let currPosArray = copyPosArray(snake.position);
-    
+
         //Display apple
         setAppleDisplay();
 
         //Move snake
         snake.move();
-    
+
         //If snake OOB, stop interval
-        if (isSnakeOOB()) { 
-            console.log("snake OOB");
+        if (isSnakeOOB() || isSnakeHitSelf()) {
+            console.log("snake ded");
             clearInterval(interval);
         } else {
-            
-            //if hit apple
-            if(isAtApple()){
+
+            //Clear snake from screen
+            clearSnakeDisplay(currPosArray);
+
+            //if hit apple, reset apple and increase length of snake
+            if (isAtApple()) {
                 clearAppleDisplay();
                 apple.resetPosition();
+
+                snake.pushSeg(getLastSeg(currPosArray));
             }
-            
+
             //update display
-            clearSnakeDisplay(currPosArray);
             setSnakeDisplay();
         }
     }
