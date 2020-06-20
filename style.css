@@ -12,4 +12,5 @@
     height: 10px;
     display: inline-block;
     border: 1px solid rgba(1,1,1,0.1);
+    line-height: 0;
 }
