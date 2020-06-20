@@ -1,10 +1,10 @@
 
 #game-board {
-    /* border: 2px solid black; */
+    border: 2px solid black;
 }
 
 .game-row {
-    margin: 0px auto;
+    /* margin: 0px auto; */
     line-height: 0px;
     /* overflow: visible; */
     white-space: nowrap;
@@ -15,6 +15,6 @@
     width: 10px;
     height: 10px;
     display: inline-block;
-    border: 1px solid rgba(1,1,1,0.1);
+    /* border: 1px solid rgba(1,1,1,0.1); */
     line-height: 0;
 }

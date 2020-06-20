@@ -1,5 +1,5 @@
 //Size of game area
-const gridSize = 30;
+const gridSize = 50;
 //time taken for each refresh in ms
 const clock = 100;
 //Starting snake length
@@ -63,16 +63,20 @@ let snake = {
 };
 
 //Initialize baby snake
-let start_i = Math.floor(gridSize / 2)
-let start_j = Math.floor(gridSize / 4)
+
+//Snake head starting position
+const start_i = Math.floor(gridSize / 2);
+const start_j = startLength+1;
 
 //Push 3 units into position array
+let s_i = start_i;
+let s_j = start_j;
 for (let x = 0; x < startLength; x++) {
     snake.position.push({
-        i: start_i,
-        j: start_j
+        i: s_i,
+        j: s_j
     })
-    start_j--;
+    s_j--;
 };
 
 //Function returns true if given snake is within given coordinates
@@ -247,24 +251,32 @@ let moveSnake = function () {
 //---------------- PRE START GAME 
 
 //Get middle square
-let startDisp = getSquareNode(start_i - 3, start_j * 2);
+let startDisp = getSquareNode(start_i - 2, start_j-3);
+let titleN = document.createElement("h1");
 
 //Set start display
 let setStartDisplay = function () {
     let dispP = document.createElement("p");
     //Set styles
     startDisp.style.lineHeight = "0";
-    startDisp.style.position = "relative";
+    // startDisp.style.position = "relative";
     startDisp.appendChild(dispP);
     dispP.innerHTML = "Hit space bar to start.";
+    // dispP.style.lineHeight = "0";
     dispP.style.position = "absolute";
-    dispP.style.left = "50%";
-    dispP.style.marginLeft = -(dispP.offsetWidth / 2) + "px";
+    // dispP.style.left = "50%";
+    // dispP.style.marginLeft = -(dispP.offsetWidth / 2) + "px";
+    let titleP = getSquareNode(1,start_j-3);
+    titleP.style.lineHeight = "0";
+    titleP.appendChild(titleN);
+    titleN.innerHTML = "Snake.";
+    titleN.style.position = "absolute";
 }
 
 //Clear start display
 let clearStartDisplay = function () {
     startDisp.innerHTML = "";
+    titleN.style.opacity = "0.2";
 }
 
 setStartDisplay();
@@ -306,3 +318,10 @@ let setControls = function () {
         }
     }
 }
+
+window.addEventListener("keydown", function(e) {
+    // space and arrow keys
+    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+        e.preventDefault();
+    }
+}, false);
