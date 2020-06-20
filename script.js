@@ -1,5 +1,5 @@
 //Size of game area
-const gridSize = 50;
+const gridSize = 30;
 //time taken for each refresh in ms
 const clock = 100;
 //Starting snake length
@@ -75,14 +75,36 @@ for (let x = 0; x < startLength; x++) {
     start_j--;
 };
 
+//Function returns true if given snake is within given coordinates
+let isInSnake = function (i, j) {
+    let isInSnake = false;
+    for (let x = 1; x < snake.position.length; x++) {
+        if (i === snake.position[x].i &&
+            j === snake.position[x].j) {
+            isInSnake = true;
+        }
+    }
+    return isInSnake;
+}
+
+
 let apple = {
     position: {
         i: null,
         j: null
     },
     resetPosition: function () {
-        this.position.i = Math.floor(Math.random() * gridSize);
-        this.position.j = Math.floor(Math.random() * gridSize);
+
+        let i = null;
+        let j = null;
+        do {
+            i = Math.floor(Math.random() * gridSize);
+            j = Math.floor(Math.random() * gridSize);
+        } while (isInSnake(i, j))
+        
+        this.position.i = i;
+        this.position.j = j;
+        
     }
 }
 apple.resetPosition();
@@ -128,28 +150,11 @@ let isSnakeOOB = function () {
 
 //Check if snake runs into itself
 let isSnakeHitSelf = function () {
-    //Snake going into itself
-    // happens when head of snake equals 3rd seg of snake 
-    // if (snake.position[0].i === snake.position[2].i &&
-    //     snake.position[0].j === snake.position[2].j) {
-    //     return true;
-    // } else {
-    //     return false;
-    // }
-    //check if head coordinates equal to any in its own array other than itself
-    let headSeg = {
-        i: snake.position[0].i,
-        j: snake.position[0].j
-    }
-    let hitItself = false;
-    for (let x = 1; x < snake.position.length; x++) {
-        if (headSeg.i === snake.position[x].i 
-            && headSeg.j === snake.position[x].j){
-                hitItself = true;
-            }
-    }
-    return hitItself;
+    let i = snake.position[0].i;
+    let j = snake.position[0].j;
+    return isInSnake(i, j);
 }
+
 
 //Get square from coordinates
 let getSquareNode = function (i, j) {
