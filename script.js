@@ -2,6 +2,8 @@
 const gridSize = 50;
 //time taken for each refresh in ms
 const clock = 100;
+//Starting snake length
+const startLength = 4;
 
 //Set up game board
 let setUpGameBoard = function () {
@@ -19,34 +21,79 @@ let setUpGameBoard = function () {
 }
 setUpGameBoard();
 
-//Snake starting variables
-let start_i = Math.floor(gridSize / 2)
-let start_j = Math.floor(gridSize / 4)
 
 let snake = {
-    position: [start_i, start_j],
+    //array if coordinates objects
+    position: [],
     direction: "e",
-    //Function that updates the position of the snake based on its current direction
+    //Function that updates each position of the snake based on its current direction
+    //Starting from the tail
     move: function () {
+
+        //For each segment of the snake, update to next segment
+        for (let x = this.position.length - 1; x > 0 ; x--) {
+            this.position[x].i = this.position[x-1].i
+            this.position[x].j = this.position[x-1].j
+        }
+
+        //For the head of the snake
         switch (this.direction) {
             case "e":
-                this.position[1]++;
+                this.position[0].j++;
                 break;
             case "n":
-                this.position[0]--;
+                this.position[0].i--;
                 break;
             case "w":
-                this.position[1]--;
+                this.position[0].j--;
                 break;
             case "s":
-                this.position[0]++;
+                this.position[0].i++;
                 break;
         }
+        
     },
     setDirection: function(d){
         this.direction = d;
     }
 };
+
+//Initialize baby snake
+let start_i = Math.floor(gridSize / 2)
+let start_j = Math.floor(gridSize / 4)
+
+//Push 3 units into position array
+for (let x = 0; x < startLength; x++) {
+    snake.position.push({i: start_i, j: start_j})
+    start_j--;
+};
+
+
+
+// let snake = {
+//     position: [start_i, start_j],
+//     direction: "e",
+//     //Function that updates the position of the snake based on its current direction
+//     move: function () {
+//         switch (this.direction) {
+//             case "e":
+//                 this.position[1]++;
+//                 break;
+//             case "n":
+//                 this.position[0]--;
+//                 break;
+//             case "w":
+//                 this.position[1]--;
+//                 break;
+//             case "s":
+//                 this.position[0]++;
+//                 break;
+//         }
+//     },
+//     setDirection: function(d){
+//         this.direction = d;
+//     }
+// };
 
 let apple = {
     position: {
@@ -74,8 +121,8 @@ let clearAppleDisplay = function() {
 
 //Returns true if snake is at apple
 let isAtApple = function(){
-    if(snake.position[0]===apple.position.i
-        && snake.position[1]===apple.position.j){
+    if(snake.position[0].i===apple.position.i
+        && snake.position[0].j===apple.position.j){
             return true;
         } else {
             return false;
@@ -84,13 +131,13 @@ let isAtApple = function(){
 
 //Check if snake is out of bounds
 let isSnakeOOB = function () {
-    if (snake.position[0] > gridSize - 1 //east border
+    if (snake.position[0].i > gridSize - 1 //east border
         ||
-        snake.position[0] < 0 //west border
+        snake.position[0].i < 0 //west border
         ||
-        snake.position[1] > gridSize - 1 //south border
+        snake.position[0].j > gridSize - 1 //south border
         ||
-        snake.position[1] < 0 //north border
+        snake.position[0].j < 0 //north border
     ) {
         return true;
     } else {
@@ -105,19 +152,44 @@ let getSquareNode = function (i, j) {
 }
 
 //Set snake
-let n = getSquareNode(snake.position[0], snake.position[1]);
-n.style.backgroundColor = "black";
+let setSnakeDisplay = function(){
+    snake.position.forEach(seg => {
+        let n = getSquareNode(seg.i,seg.j);
+        n.style.backgroundColor = "black"
+    });
+}
+setSnakeDisplay();
 
-//Function that refreshes and updates snake position every clock
+//Copies original array and returns the new copy
+let copyPosArray = function(original){
+    let crispy = [];
+    for(x = 0; x < original.length; x++){
+        crispy[x] = {
+            i: original[x].i,
+            j: original[x].j
+        }
+    }
+    return crispy;
+}
+
+let clearSnakeDisplay = function(posArray){
+    posArray.forEach(seg => {
+        let n = getSquareNode(seg.i,seg.j);
+        n.style.backgroundColor = "transparent"
+    });
+}
+
+
+//----------------MAIN GAME FLOW
+//Refresh and update snake position every clock
 let moveSnake = function () {
     
     let interval = setInterval(moveSnake, clock);
     
     function moveSnake() {
     
-        //Update snake position
-        // console.log("snake coord:"+snake.position)
-        let currSquare = getSquareNode(snake.position[0], snake.position[1])
+        //Make a copy of the snake position array
+        let currPosArray = copyPosArray(snake.position);
     
         //Display apple
         setAppleDisplay();
@@ -138,14 +210,13 @@ let moveSnake = function () {
             }
             
             //update display
-            currSquare.style.backgroundColor = "transparent"
-            getSquareNode(snake.position[0], snake.position[1]).style.backgroundColor = "black";
+            clearSnakeDisplay(currPosArray);
+            setSnakeDisplay();
         }
     }
 }
 
-
-//-------- PRE START GAME 
+//---------------- PRE START GAME 
 
 //Get middle square
 let startDisp = getSquareNode(start_i - 3, start_j * 2);
@@ -170,7 +241,7 @@ let clearStartDisplay = function () {
 
 setStartDisplay();
 
-//On space bar hit, clear start display, and begin moving snake.
+//On space bar hit, clear start display, and begin moving snake
 let startGame = function () {
     document.addEventListener("keyup", spaceBarHit)
 
@@ -178,6 +249,7 @@ let startGame = function () {
         //space bar is 32
         if (event.keyCode === 32) {
             clearStartDisplay();
+            setControls();
             moveSnake();
         }
     }
@@ -206,5 +278,3 @@ let setControls = function () {
         }
     }
 }
-
-setControls();
