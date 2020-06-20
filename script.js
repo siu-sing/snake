@@ -42,6 +42,9 @@ let snake = {
                 this.position[0]++;
                 break;
         }
+    },
+    setDirection: function(d){
+        this.direction = d;
     }
 };
 
@@ -107,34 +110,46 @@ n.style.backgroundColor = "black";
 
 //Function that refreshes and updates snake position every clock
 let moveSnake = function () {
+    
     let interval = setInterval(moveSnake, clock);
+    
     function moveSnake() {
+    
         //Update snake position
         // console.log("snake coord:"+snake.position)
         let currSquare = getSquareNode(snake.position[0], snake.position[1])
+    
         //Display apple
         setAppleDisplay();
+
+        //Move snake
         snake.move();
+    
         //If snake OOB, stop interval
         if (isSnakeOOB()) { 
             console.log("snake OOB");
             clearInterval(interval);
         } else {
-            //update display
-        
+            
             //if hit apple
             if(isAtApple()){
                 clearAppleDisplay();
                 apple.resetPosition();
             }
+            
+            //update display
             currSquare.style.backgroundColor = "transparent"
             getSquareNode(snake.position[0], snake.position[1]).style.backgroundColor = "black";
         }
     }
 }
 
+
+//-------- PRE START GAME 
+
 //Get middle square
 let startDisp = getSquareNode(start_i - 3, start_j * 2);
+
 //Set start display
 let setStartDisplay = function () {
     let dispP = document.createElement("p");
@@ -169,11 +184,6 @@ let startGame = function () {
 }
 startGame();
 
-//Set snake direction: e,n,w,s
-let setSnakeDirection = function (dir) {
-    snake.direction = dir;
-}
-
 //Assign keyboard controls
 let setControls = function () {
     document.addEventListener("keyup", arrowHit)
@@ -182,16 +192,16 @@ let setControls = function () {
         console.log("arrow hit")
         switch (event.keyCode) {
             case 39: //east
-                setSnakeDirection("e");
+                snake.setDirection("e");
                 break;
             case 38: //north
-                setSnakeDirection("n");
+                snake.setDirection("n");
                 break;
             case 37: //west
-                setSnakeDirection("w");
+                snake.setDirection("w");
                 break;
             case 40: //south
-                setSnakeDirection("s");
+                snake.setDirection("s");
                 break;
         }
     }
