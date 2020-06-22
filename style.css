@@ -1,6 +1,16 @@
 
+html body {
+    background-color: #b3a996;
+}
+
 #game-board {
-    border: 5px solid black;
+    border: 5px solid #29383b;
+    background-color: #f4e6b3;
+}
+
+.start-display{
+    color: #29383b;
+    /* color: blue; */
 }
 
 .game-row {
@@ -17,4 +27,5 @@
     display: inline-block;
     /* border: 1px solid rgba(1,1,1,0.1); */
     line-height: 0;
+    background-color: transparent;
 }

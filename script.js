@@ -9,6 +9,8 @@ const start_i = Math.floor(gridSize / 2);
 const start_j = startLength+1;
 //Rounds
 let gameRound = 0;
+//Snake colour
+let snakeColor = "#29383b";
 
 //---CONVENIENCE FUNCTIONS
 //Get square from coordinates
@@ -185,7 +187,7 @@ let apple = {
 function setAppleDisplay() {
     let n = getSquareNode(apple.position.i, apple.position.j);
     // n.style.backgroundImage = "url('./icons/apple.svg')"
-    n.style.backgroundColor = "red"
+    n.style.backgroundColor = "#e56345"
 }
 
 //Clear apple display
@@ -209,7 +211,7 @@ function isAtApple() {
 function setSnakeDisplay() {
     snake.position.forEach(seg => {
         let n = getSquareNode(seg.i, seg.j);
-        n.style.backgroundColor = "black"
+        n.style.backgroundColor = snakeColor;
     });
 }
 
@@ -298,10 +300,9 @@ function setStartDisplay() {
         str = "Hit space bar to start.";
     }
     dispP.innerHTML = str;
-    // dispP.style.lineHeight = "0";
     dispP.style.position = "absolute";
-    // dispP.style.left = "50%";
-    // dispP.style.marginLeft = -(dispP.offsetWidth / 2) + "px";
+    dispP.classList.add("start-display")
+
 
     //Create title display
     let titleP = getSquareNode(1,start_j-3);
@@ -309,6 +310,7 @@ function setStartDisplay() {
     titleP.appendChild(titleN);
     titleN.innerHTML = "Snake.";
     titleN.style.position = "absolute";
+    titleN.classList.add("start-display");
 
     //Inialize baby snake
     if (gameRound===0){
@@ -348,6 +350,7 @@ let startGame = function () {
 
 //Show start screen
 setStartDisplay();
+//Add event listener
 startGame();
 
 //Assign keyboard controls
