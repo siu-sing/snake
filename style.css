@@ -11,7 +11,29 @@ html body {
 .start-display{
     color: #29383b;
     /* color: blue; */
+    
 }
+
+.fade-in{
+    animation: fadeIn ease 1s;
+}
+
+@keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+    }
+
+.fade-out{
+    color: #29383b;
+    /* color: blue; */
+    opacity:0.0;
+    animation: fadeOut ease 1s;
+}
+
+@keyframes fadeOut {
+    0% {opacity:1;}
+    100% {opacity:0;}
+    }
 
 .game-row {
     /* margin: 0px auto; */

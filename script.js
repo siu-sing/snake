@@ -227,8 +227,12 @@ function clearSnakeDisplay(posArray) {
 
 //Clears the gameboard of all objects (snake & apple)
 function resetGameBoard(){
-    document.getElementById("game-board").innerHTML = "";
-    setUpGameBoard();
+    let gs = document.querySelectorAll(".game-square")
+    gs.forEach( n => {
+        n.style.backgroundColor="transparent"
+    });
+    // setUpGameBoard();
+
 }
 
 
@@ -279,7 +283,7 @@ let moveSnake = function () {
 
 //Get middle square
 let startDisp = getSquareNode(start_i - 2, start_j-3);
-
+let dispP = document.createElement("p");
 let titleN = document.createElement("h1");
 
 //Set start display
@@ -290,7 +294,10 @@ function setStartDisplay() {
     // startDisp.style.position = "relative";
 
     //Create p element for text display
-    let dispP = document.createElement("p");
+
+    dispP.classList.remove("fade-out")
+    dispP.classList.add("fade-in")
+    dispP.classList.add("start-display");
     startDisp.appendChild(dispP);
     
     let str = "";
@@ -301,12 +308,14 @@ function setStartDisplay() {
     }
     dispP.innerHTML = str;
     dispP.style.position = "absolute";
-    dispP.classList.add("start-display")
+    
 
 
     //Create title display
     let titleP = getSquareNode(1,start_j-3);
     titleP.style.lineHeight = "0";
+    titleN.classList.remove("fade-out")
+    titleN.classList.add("fade-in")
     titleP.appendChild(titleN);
     titleN.innerHTML = "Snake.";
     titleN.style.position = "absolute";
@@ -317,14 +326,16 @@ function setStartDisplay() {
         snake.resetSnake();
         setSnakeDisplay();
     }
-
-    gameRound++;
 }
 
 //Clear start display
 function clearStartDisplay() {
-    startDisp.innerHTML = "";
-    titleN.innerHTML = "";
+    // startDisp.innerHTML = "";
+    // titleN.innerHTML = "";
+    dispP.classList.remove("fade-in");
+    dispP.classList.add("fade-out");
+    titleN.classList.remove("fade-in");
+    titleN.classList.add("fade-out");
 }
 
 
@@ -336,11 +347,13 @@ let startGame = function () {
     function spaceBarHit() {
         //space bar is 32
         if (event.keyCode === 32) {
+            
             clearStartDisplay();
             if(gameRound>0){
                 resetGameBoard();
                 snake.resetSnake();
             }
+            gameRound++;
             setControls();
             moveSnake();
             document.removeEventListener("keyup",spaceBarHit);
