@@ -11,6 +11,8 @@ const start_j = startLength+1;
 let gameRound = 0;
 //Snake colour
 let snakeColor = "#29383b";
+//Score
+let score = 0;
 
 //---CONVENIENCE FUNCTIONS
 //Get square from coordinates
@@ -267,6 +269,8 @@ let moveSnake = function () {
 
             //if hit apple, reset apple and increase length of snake
             if (isAtApple()) {
+                score++;
+                document.getElementById("score").innerHTML = `${score}`
                 clearAppleDisplay();
                 apple.resetPosition();
                 setAppleDisplay();
@@ -354,12 +358,17 @@ let startGame = function () {
                 snake.resetSnake();
             }
             gameRound++;
+            score = 0;
+            document.getElementById("round-no").innerHTML=`Round ${gameRound}`
+            document.getElementById("score").innerHTML = `${score}`
             setControls();
             moveSnake();
             document.removeEventListener("keyup",spaceBarHit);
         }
     }
 }
+
+
 
 //Show start screen
 setStartDisplay();
