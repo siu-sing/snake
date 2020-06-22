@@ -304,16 +304,24 @@ let setControls = function () {
         console.log("arrow hit")
         switch (event.keyCode) {
             case 39: //east
-                snake.setDirection("e");
+                if(snake.direction != "w"){
+                    snake.setDirection("e");
+                }
                 break;
             case 38: //north
-                snake.setDirection("n");
+                if(snake.direction != "s"){
+                    snake.setDirection("n");
+                }
                 break;
             case 37: //west
+            if(snake.direction != "e"){
                 snake.setDirection("w");
+            }
                 break;
             case 40: //south
+            if(snake.direction != "n"){
                 snake.setDirection("s");
+            }                
                 break;
         }
     }
