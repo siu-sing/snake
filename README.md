@@ -1,6 +1,8 @@
 # sei-23-project-1
 Project 1 for SEI-23
 
+<https://siu-sing.github.io/snake/>
+
 ### Objectives
 - Create basic Game UI with HTML, JS and CSS
 - Practice DOM manipulation from js and user input
@@ -32,7 +34,7 @@ This was the original MVP plan at the start of the project:
 - Each snake movement will check 3 things:
 
 |Condition						|Yes				|No		|
-|-------------------------------|-------------------|-------|
+|:-------------------------------|:-------------------|:-------|
 |Is snake out of bounds?		| Dies. Game over.	| Continue movement|
 |Did snake collide with itself?	| Dies. Game over.	| Continue movement|
 |Did snake eat the apple?		| Increment snake by one segment, inserted at tail | Continue movement|
