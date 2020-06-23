@@ -1,7 +1,7 @@
 # sei-23-project-1
 Project 1 for SEI-23
 
-<https://siu-sing.github.io/snake/>
+[Snake]<https://siu-sing.github.io/snake/>
 
 ### Objectives
 - Create basic Game UI with HTML, JS and CSS
@@ -27,7 +27,7 @@ This was the original MVP plan at the start of the project:
 #### Apple
 
 ### Overall Game flow 
-![]({{site.baseurl}}/./screencapture.gif)
+![Screen Capture](./screencapture.gif)
 - "Animation" of snake kicks off based on default direction of snake
 - Snake direction is updated based on the key press by the user
 - In the next frame, snake moves in the new direction set by the user
