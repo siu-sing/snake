@@ -211,9 +211,23 @@ function isAtApple() {
 
 //Displays snake on gameboard based on its coordinates
 function setSnakeDisplay() {
-    snake.position.forEach(seg => {
+    snake.position.forEach((seg,idx) => {
         let n = getSquareNode(seg.i, seg.j);
-        n.style.backgroundColor = snakeColor;
+        if(1==0){
+            // n.style.backgroundImage = "url('./icons/cat.svg')";
+            // n.style.backgroundSize = "cover"
+            // n.style.backgroundRepeat = "no-repeat"
+            let cat = document.createElement("img");
+            cat.src = "./icons/cat.svg";
+            // cat.style.position = "absolute";
+            cat.style.width = "20px"
+            cat.style.height = "auto"
+            cat.style.margin = "0 auto";
+            n.appendChild(cat)
+        } else {
+            n.style.backgroundColor = snakeColor;
+        }
+        
     });
 }
 
@@ -223,6 +237,8 @@ function clearSnakeDisplay(posArray) {
         let n = getSquareNode(seg.i, seg.j);
         if(n!=undefined){
             n.style.backgroundColor = "transparent";
+            n.style.backgroundImage = "none";
+            n.innerHTML ="";
         }
     });
 }

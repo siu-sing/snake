@@ -15,7 +15,7 @@ html body {
 }
 
 .fade-in{
-    animation: fadeIn ease 1s;
+    animation: fadeIn ease 0.8s;
 }
 
 @keyframes fadeIn {
@@ -27,7 +27,7 @@ html body {
     color: #29383b;
     /* color: blue; */
     opacity:0.0;
-    animation: fadeOut ease 1s;
+    animation: fadeOut ease 0.8s;
 }
 
 @keyframes fadeOut {
