@@ -30,12 +30,14 @@ The snake is represented by a js object which records the state of the snake at 
 
 The `position` property stores an array of coordinate objects representing the coordinate of each segment of the snake.  
 
-    position: [ {i:24, j:5}, {i:24, j:4}, {i:24, j:3}, {i:24, j:2} ] // a 4 unit snake with its head at position (24,5) on the grid, facing east.
+    // a 4 unit snake with its head at position (24,5) on the grid, facing east.
+    position: [ {i:24, j:5}, {i:24, j:4}, {i:24, j:3}, {i:24, j:2} ] 
 
 The `direction` property keeps track of the current bearing of the snake and takes the values `n`, `s`, `e`, or `w`. This can be dynamically changed by the event listener on the user's arrow keys.
 
-The `move` function in the snake object is called at every 100ms interval to update the position of the snake based on its `position` and `direction` values. 
+The `move()` function in the snake object is called at every 100ms interval to update the position of the snake based on its `position` and `direction` values. 
 
+Every time `move()` is executed:
 1. Starting from the tail, each segment's coordinate is updated to the same one in front of it.
 2. The head of the snake is incremented 1 unit in the direction of the `direction` value. 
 
