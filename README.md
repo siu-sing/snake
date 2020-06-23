@@ -27,7 +27,8 @@ This was the original MVP plan at the start of the project:
 #### Apple
 
 ### Overall Game flow 
-![Screen Capture](./screencapture.gif =250x)
+<!-- ![Screen Capture](./screencapture.gif) -->
+<img src="./screencapture.gif" width="250px">
 - "Animation" of snake kicks off based on default direction of snake
 - Snake direction is updated based on the key press by the user
 - In the next frame, snake moves in the new direction set by the user
