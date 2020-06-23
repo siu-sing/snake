@@ -38,7 +38,7 @@ The `direction` property keeps track of the current bearing of the snake and tak
 The `move()` function in the snake object is called at every 100ms interval to update the position of the snake based on its `position` and `direction` values. 
 
 Every time `move()` is executed:
-1. Starting from the tail, each segment's coordinate is updated to the same one in front of it.
+1. Starting from the tail, each segment's coordinate is updated to the one in front of it.
 2. The head of the snake is incremented 1 unit in the direction of the `direction` value. 
 
 This ensures that the snake constantly follows through the trail of its head, whichever path it takes.
@@ -49,7 +49,6 @@ The apple is also represented by an object, but contains only 1 coordinate objec
 An object method `resetPosition()` was created to reset the position of the apple during game play. The function has an additional check to ensures the new apple does not spawn within the snake.
 
 ### Overall Game Flow 
-<!-- ![Screen Capture](./screencapture.gif) -->
 <img src="./screencapture.gif">
 
 - "Animation" of snake kicks off based on default direction of snake
