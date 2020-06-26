@@ -233,9 +233,20 @@ class AISnake extends Snake{
         let i = this.position[0].i;
         let j = this.position[0].j;
         console.log(i,j)
-        //southwest quadrant, snake heading east
-        if(di>i && dj>j){
-            this.direction = di-i > dj-j ? "s" : "e";
+        //southwest quadrant
+        if(di>=i && dj>=j){
+            switch(this.direction){
+                case "s":
+                    this.direction = i==di ? "e" : "s"
+                case "e":
+                    this.direction = j==dj ? "s" : "e";    
+                    break;
+                case "n":
+                case "w":
+                    this.direction = Math.random() >= 0.5 ? "e" : "s";
+                    break;
+            }
+            
         }
 
         this.move();
@@ -246,6 +257,7 @@ class AISnake extends Snake{
 let playerSnake = new Snake();
 setControls(playerSnake);
 let AI = new AISnake();
+AI.direction = "n";
 
 playerSnake.setDisplay();
 AI.setDisplay();
@@ -259,7 +271,7 @@ let gamePlay = function (){
         let currSnakePosition = copyPosArray(playerSnake.position);
         clearGameBoardDisplay();
         playerSnake.move();
-        AI.autoMove(getEmptyCoordinate());
+        AI.autoMove(new Coordinate(40,40));
         playerSnake.setDisplay();
         AI.setDisplay();
     }
