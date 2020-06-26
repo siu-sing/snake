@@ -64,3 +64,23 @@ An object method `resetPosition()` was created to reset the position of the appl
 
 ### Styling 
 - Fade in/out animation of the game title and start game instructions
+
+## Further
+- Similar games 
+    - [slither.io](http://slither.io/)
+    - [Blockade](https://en.wikipedia.org/wiki/Blockade_(video_game))
+    - [Surround](https://en.wikipedia.org/wiki/Surround_(video_game))
+    - [Tron Light Cycle](https://en.wikipedia.org/wiki/Tron_(video_game))
+
+- Essentially a multiplayer snake game where you can kill other snakes by causing them to collide into your snake body. 
+- Instead of having multiplayers, will use an AI
+
+### MVP
+- AI Snake that makes random turns on gameboard
+- AI Snake dies on contact with player snake body or wall
+
+### Additional
+- AI snake can grow based on the same mechanics as player snake
+- AI movements are more intelligent 
+    - Looks for objects to eat 
+    - Tries to block other player
