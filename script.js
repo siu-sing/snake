@@ -6,7 +6,7 @@ const clock = 100;
 const startLength = 4;
 //Snake head starting position
 const start_i = Math.floor(gridSize / 2);
-const start_j = startLength+1;
+const start_j = startLength + 1;
 //Rounds
 let gameRound = 0;
 //Snake colour
@@ -14,7 +14,7 @@ let snakeColor = "#29383b";
 //Score
 let score = 0;
 //directions
-const D = ['n','e','s','w'];
+const D = ['n', 'e', 's', 'w'];
 
 //---CONVENIENCE FUNCTIONS
 //Get square from coordinates
@@ -28,7 +28,8 @@ function copyPosArray(original) {
     for (x = 0; x < original.length; x++) {
         crispy[x] = {
             i: original[x].i,
-            j: original[x].j
+            j: original[x].j,
+            dir: original[x].dir
         }
     }
     return crispy;
@@ -38,12 +39,38 @@ function copyPosArray(original) {
 function getLastSeg(posArray) {
     let seg = {
         i: null,
-        j: null
+        j: null,
+        dir: null
     }
     seg.i = posArray[posArray.length - 1].i;
     seg.j = posArray[posArray.length - 1].j;
+    seg.dir = posArray[posArray.length - 1].dir;
 
     return seg;
+}
+
+//Translates a given coordinate base on given direction and distance
+function translate(a, b, dir, distance = 1) {
+    let coordinate = { i: null, j: null };
+    switch (dir) {
+        case "e":
+            coordinate.i = a;
+            coordinate.j = b+(1*distance);
+            break;
+        case "n":
+            coordinate.i = a-(1*distance);
+            coordinate.j = b;
+            break;
+        case "w":
+            coordinate.i = a;
+            coordinate.j = b-(1*distance);
+            break;
+        case "s":
+            coordinate.i = a+(1*distance);
+            coordinate.j = b;
+            break;
+    }
+    return coordinate;
 }
 
 //--DISPLAY DOM MANIPULATION
@@ -66,32 +93,35 @@ setUpGameBoard();
 
 //---GAME OBJECTS
 class Coordinate {
-    constructor(i=0,j=0){
-        this.i=i;
-        this.j=j;
+    constructor(i = 0, j = 0, dir = "e") {
+        this.i = i;
+        this.j = j;
+        this.dir = dir;
     }
 }
 
 class Snake {
-    constructor(i = start_i, j = start_j){
-        this.position=[]; //array of coordinates
+    constructor(i = start_i, j = start_j) {
+        this.position = []; //array of coordinates
         this.headColor = "#a2de96";
-        this.direction="e";
+        this.direction = "e";
         //Baby snake
         for (let x = 0; x < startLength; x++) {
-            this.position.push(new Coordinate(i,j))
+            this.position.push(new Coordinate(i, j))
             j--;
         };
     }
-    
+
     //Update new position of each segment 
-    move(){
+    move() {
         //Starting from tail
-        for (let x = this.position.length-1; x > 0 ; x--) {
+        for (let x = this.position.length - 1; x > 0; x--) {
             this.position[x].i = this.position[x - 1].i
             this.position[x].j = this.position[x - 1].j
+            this.position[x].dir = this.position[x - 1].dir
         }
         //Head position
+        this.position[0].dir = this.position;
         switch (this.direction) {
             case "e":
                 this.position[0].j++;
@@ -108,19 +138,19 @@ class Snake {
         }
     }
 
-    setDirection(d){
-        this.direction=d;
+    setDirection(d) {
+        this.direction = d;
     }
 
     //Push a new segment into the snake
-    pushSegment(coordinate){
+    pushSegment(coordinate) {
         this.position.push(coordinate);
     }
 
     //Checks if given coordinate is in snake;
-    isInSnake(i, j, includeHead=false){
+    isInSnake(i, j, includeHead = false) {
         let isInSnake = false;
-        let startIndex = includeHead ? 0 : 1; 
+        let startIndex = includeHead ? 0 : 1;
         for (let x = startIndex; x < this.position.length; x++) {
             if (i === this.position[x].i &&
                 j === this.position[x].j) {
@@ -129,23 +159,41 @@ class Snake {
         }
         return isInSnake;
     }
-    setDisplay(){
-        this.position.forEach((seg,idx) => {
+    dirAtPosition(i,j){
+        let dir = null;
+        for (let x = 0; x < this.position.length; x++) {
+            if (i === this.position[x].i &&
+                j === this.position[x].j) {
+                dir = this.position[x].dir;
+            }
+        }
+        return dir
+    }
+    setDisplay() {
+        this.position.forEach((seg, idx) => {
             let n = getSquareNode(seg.i, seg.j);
-            if(idx==0){
-                n.style.backgroundColor = this.headColor;    
+            if (idx == 0) {
+                n.style.backgroundColor = this.headColor;
             } else {
                 n.style.backgroundColor = snakeColor;
             }
-                
+
         });
+    }
+    isAtApple(fruitObj) {
+        if (fruitObj.position.i == this.position[0].i &&
+            fruitObj.position.j == this.position[0].j) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
 
 
 //Checks if the snake is OOB
-function isSnakeOOB(snakeObj){
+function isSnakeOOB(snakeObj) {
     if (snakeObj.position[0].i > gridSize - 1 //east border
         ||
         snakeObj.position[0].i < 0 //west border
@@ -167,24 +215,34 @@ function isSnakeHitSelf(snakeObj) {
     return snakeObj.isInSnake(i, j);
 }
 
+let testFruitCoord = [];
+// testFruitCoord.push(new Coordinate(25,25));
+// testFruitCoord.push(new Coordinate(18, 25));
+// testFruitCoord.push(new Coordinate(40, 22));
 
-class Fruit{
-    constructor(){
+class Fruit {
+    constructor() {
         this.position = getEmptyCoordinate();
+        this.color = "#e56345"
     }
-    resetPosition(){
-        this.position = getEmptyCoordinate();
+    resetPosition() {
+        if (testFruitCoord.length > 0) {
+            this.position = testFruitCoord.shift();
+        } else {
+            this.position = getEmptyCoordinate();
+        }
+
     }
-    setDisplay(){
+    setDisplay() {
         let n = getSquareNode(this.position.i, this.position.j);
         // n.style.backgroundImage = "url('./icons/apple.svg')"
-        n.style.backgroundColor = "#e56345"
+        n.style.backgroundColor = this.color;
     }
 }
 
 //Generate random empty coordinate
-function getEmptyCoordinate(){
-    let c = new Coordinate(Math.floor(Math.random() * gridSize),Math.floor(Math.random() * gridSize))
+function getEmptyCoordinate() {
+    let c = new Coordinate(Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize))
     //NEED TO CHECK GAME BOARD FOR EMPTY COORDINATES
     return c
 }
@@ -216,35 +274,41 @@ function isAtApple() {
 }
 
 //Clears the gameboard of all objects (snake & apple)
-function clearGameBoardDisplay(){
+function clearGameBoardDisplay() {
     let gs = document.querySelectorAll(".game-square")
-    gs.forEach( n => {
-        n.style.backgroundColor="transparent"
+    gs.forEach(n => {
+        n.style.backgroundColor = "transparent"
     });
 }
 
 
-class AISnake extends Snake{
-    constructor(i=start_i-5,j=start_j){
-        super(i,j);
-        this.headColor="#e79c2a"
+class AISnake extends Snake {
+    constructor(i = start_i - 5, j = start_j + 15) {
+        super(i, j);
+        this.headColor = "#e79c2a"
+        this.position = [];
+        for (let x = 0; x < startLength + 15; x++) {
+            this.position.push(new Coordinate(i, j))
+            j--;
+        };
+
     }
-    autoMove(fruit){
+    autoMove(fruit) {
         //Set direction based on current scenario
         // this.direction=D[Math.floor(Math.random()*3)]
         // console.log(coordinate);
-        let di = fruit.position.i ;
-        let dj = fruit.position.j ;
+        let di = fruit.position.i;
+        let dj = fruit.position.j;
         let i = this.position[0].i;
         let j = this.position[0].j;
-        console.log(i,j)
+        
         //southeast quadrant
-        if(di>=i && dj>=j){
-            switch(this.direction){
+        if (di >= i && dj >= j) {
+            switch (this.direction) {
                 case "s":
-                    this.direction = i==di ? "e" : "s"
+                    this.direction = i == di ? "e" : "s"
                 case "e":
-                    this.direction = j==dj ? "s" : "e";    
+                    this.direction = j == dj ? "s" : "e";
                     break;
                 case "n":
                     this.direction = "e";
@@ -254,13 +318,13 @@ class AISnake extends Snake{
                     break;
             }
             //southwest quadrant
-        } else if (di>=i && dj<=j) {
-            switch(this.direction){
+        } else if (di >= i && dj <= j) {
+            switch (this.direction) {
                 case "s":
-                    this.direction = i==di ? "w" : "s"
+                    this.direction = i == di ? "w" : "s"
                     break;
                 case "w":
-                    this.direction = j==dj ? "s" : "w";    
+                    this.direction = j == dj ? "s" : "w";
                     break;
                 case "e":
                     this.direction = "s";
@@ -270,13 +334,13 @@ class AISnake extends Snake{
                     break;
             }
             //northwest quadrant
-        } else if (di<=i && dj<=j){
-            switch(this.direction){
+        } else if (di <= i && dj <= j) {
+            switch (this.direction) {
                 case "n":
-                    this.direction = i==di ? "w" : "n"
+                    this.direction = i == di ? "w" : "n"
                     break;
                 case "w":
-                    this.direction = j==dj ? "n" : "w";    
+                    this.direction = j == dj ? "n" : "w";
                     break;
                 case "e":
                     this.direction = "n";
@@ -286,13 +350,13 @@ class AISnake extends Snake{
                     break;
             }
             //northeast quadrant
-        } else if (di<=i && dj>=j){
-            switch(this.direction){
+        } else if (di <= i && dj >= j) {
+            switch (this.direction) {
                 case "n":
-                    this.direction = i==di ? "e" : "n"
+                    this.direction = i == di ? "e" : "n"
                     break;
                 case "e":
-                    this.direction = j==dj ? "n" : "e";    
+                    this.direction = j == dj ? "n" : "e";
                     break;
                 case "s":
                     this.direction = "e";
@@ -304,48 +368,84 @@ class AISnake extends Snake{
         }
 
         //CHECK IF NEW DIRECTION COLLIDES WITH ITSELF
+        let newPos = translate(this.position[0].i,this.position[0].j, this.direction);
+        if(this.isInSnake(newPos.i,newPos.j)==true){
+            let dir = this.dirAtPosition(newPos.i,newPos.j);
+            switch(this.direction){
+                case "n":
+                case "s":
+                    this.direction = dir=="w" ? "e" : "w"
+                    break;
+                case "e":
+                case "w":
+                    this.direction = dir=="s" ? "n" : "s"
+                    break;
+            }
+        }
         //IF SO, CHOOSE A NEW DIRECTION THAT DOESN'T
 
         this.move();
 
-        if(fruit.position.i == this.position[0].i
-            && fruit.position.j == this.position[0].j) {
-                fruit.resetPosition();
-            }
+        if (fruit.position.i == this.position[0].i &&
+            fruit.position.j == this.position[0].j) {
+            fruit.resetPosition();
+        }
     }
 }
 
 //Intialize new player snake
 let playerSnake = new Snake();
 setControls(playerSnake);
-let AI = new AISnake();
-AI.direction = "n";
 
+//Initialize fruit for player
+let playerApple = new Fruit();
+playerApple.color = "#5a3d55";
+
+//Initialize new AI Snake
+let AI = new AISnake();
+
+//Initialize dummy fruit for AI
 let AIapple = new Fruit();
-AIapple.position = new Coordinate(40,40);
-AIapple.setDisplay();
+
+//Initialize all displays
 playerSnake.setDisplay();
+playerApple.setDisplay();
+
 AI.setDisplay();
+AIapple.setDisplay();
+
 
 
 //----------------MAIN GAME FLOW
-let gamePlay = function (){
-    
+let gamePlay = function () {
+
     let mainInterval = setInterval(step, clock);
-    
-    function step(){
+
+    function step() {
         let currSnakePosition = copyPosArray(playerSnake.position);
         clearGameBoardDisplay();
+
+        //Move Snakes
         playerSnake.move();
         AI.autoMove(AIapple);
-        playerSnake.setDisplay();
-        AI.setDisplay();
-        // AIapple.setDisplay();
 
+        if(playerSnake.isAtApple(playerApple)){
+            playerApple.resetPosition();
+            playerSnake.pushSegment(getLastSeg(currSnakePosition))
+        }
         //player snake grows if eat apple
 
         //if AI snake collides with player body, it dies
         //if player snake collides with 
+
+        //Show display
+        playerSnake.setDisplay();
+        playerApple.setDisplay();
+        AI.setDisplay();
+        AIapple.setDisplay();
+
+
+
     }
 }
 
@@ -400,15 +500,15 @@ let moveSnake = function () {
 //---------------- PRE START GAME 
 
 //Get middle square
-let startDisp = getSquareNode(start_i - 2, start_j-3);
+let startDisp = getSquareNode(start_i - 2, start_j - 3);
 let dispP = document.createElement("p");
 let titleN = document.createElement("h1");
 
 //Set start display
 function setStartDisplay() {
-    startDisp = getSquareNode(start_i - 2, start_j-3);
+    startDisp = getSquareNode(start_i - 2, start_j - 3);
     //Set style for display
-    startDisp.style.lineHeight = "0";    
+    startDisp.style.lineHeight = "0";
     // startDisp.style.position = "relative";
 
     //Create p element for text display
@@ -417,20 +517,20 @@ function setStartDisplay() {
     dispP.classList.add("fade-in")
     dispP.classList.add("start-display");
     startDisp.appendChild(dispP);
-    
+
     let str = "";
-    if(gameRound > 0){
+    if (gameRound > 0) {
         str = "Hit space bar to restart.";
     } else {
         str = "Hit space bar to start.";
     }
     dispP.innerHTML = str;
     dispP.style.position = "absolute";
-    
+
 
 
     //Create title display
-    let titleP = getSquareNode(1,start_j-3);
+    let titleP = getSquareNode(1, start_j - 3);
     titleP.style.lineHeight = "0";
     titleN.classList.remove("fade-out")
     titleN.classList.add("fade-in")
@@ -440,7 +540,7 @@ function setStartDisplay() {
     titleN.classList.add("start-display");
 
     //Inialize baby snake
-    if (gameRound===0){
+    if (gameRound === 0) {
         snake.resetSnake();
         setSnakeDisplay();
     }
@@ -465,19 +565,19 @@ let startGame = function () {
     function spaceBarHit() {
         //space bar is 32
         if (event.keyCode === 32) {
-            
+
             clearStartDisplay();
-            if(gameRound>0){
+            if (gameRound > 0) {
                 resetGameBoard();
                 snake.resetSnake();
             }
             gameRound++;
             score = 0;
-            document.getElementById("round-no").innerHTML=`Round ${gameRound}`
+            document.getElementById("round-no").innerHTML = `Round ${gameRound}`
             document.getElementById("score").innerHTML = `${score}`
             setControls();
             moveSnake();
-            document.removeEventListener("keyup",spaceBarHit);
+            document.removeEventListener("keyup", spaceBarHit);
         }
     }
 }
@@ -497,32 +597,32 @@ function setControls(snakeObj) {
         console.log("arrow hit")
         switch (event.keyCode) {
             case 39: //east
-                if(snakeObj.direction != "w"){
+                if (snakeObj.direction != "w") {
                     snakeObj.setDirection("e");
                 }
                 break;
             case 38: //north
-                if(snakeObj.direction != "s"){
+                if (snakeObj.direction != "s") {
                     snakeObj.setDirection("n");
                 }
                 break;
             case 37: //west
-            if(snakeObj.direction != "e"){
-                snakeObj.setDirection("w");
-            }
+                if (snakeObj.direction != "e") {
+                    snakeObj.setDirection("w");
+                }
                 break;
             case 40: //south
-            if(snakeObj.direction != "n"){
-                snakeObj.setDirection("s");
-            }                
+                if (snakeObj.direction != "n") {
+                    snakeObj.setDirection("s");
+                }
                 break;
         }
     }
 }
 
-window.addEventListener("keydown", function(e) {
+window.addEventListener("keydown", function (e) {
     // space and arrow keys
-    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+    if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
         e.preventDefault();
     }
 }, false);
