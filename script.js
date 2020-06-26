@@ -13,6 +13,8 @@ let gameRound = 0;
 let snakeColor = "#29383b";
 //Score
 let score = 0;
+//directions
+const D = ['n','e','s','w'];
 
 //---CONVENIENCE FUNCTIONS
 //Get square from coordinates
@@ -63,23 +65,33 @@ setUpGameBoard();
 
 
 //---GAME OBJECTS
+class Coordinate {
+    constructor(i=0,j=0){
+        this.i=i;
+        this.j=j;
+    }
+}
 
-let snake = {
-    //array of coordinates objects
-    position: [],
-    direction: "e",
-    //Function that updates each position of the snake based on its current direction
-    //Starting from the tail
-    move: function () {
-
-        //Starting from the tail
-        //Update position of each segment to the one in front of it
-        for (let x = this.position.length - 1; x > 0; x--) {
+class Snake {
+    constructor(i = start_i, j = start_j){
+        this.position=[]; //array of coordinates
+        this.headColor = "#a2de96";
+        this.direction="e";
+        //Baby snake
+        for (let x = 0; x < startLength; x++) {
+            this.position.push(new Coordinate(i,j))
+            j--;
+        };
+    }
+    
+    //Update new position of each segment 
+    move(){
+        //Starting from tail
+        for (let x = this.position.length-1; x > 0 ; x--) {
             this.position[x].i = this.position[x - 1].i
             this.position[x].j = this.position[x - 1].j
         }
-
-        //Update head of snake based on direction
+        //Head position
         switch (this.direction) {
             case "e":
                 this.position[0].j++;
@@ -94,59 +106,53 @@ let snake = {
                 this.position[0].i++;
                 break;
         }
-
-    },
-    //Set direction of the snake
-    setDirection: function (d) {
-        this.direction = d;
-    },
-
-    //Push a new segment into the tail of the snake
-    //Seg is a coordinate object
-    pushSeg: function (seg) {
-        //Add one more unit to tail
-        this.position.push(seg);
-    },
-    
-    //Reset snake to its original direction, position and size
-    resetSnake: function() {
-        this.direction = "e";
-        this.position = [];
-        let s_i = start_i;
-        let s_j = start_j;    
-        
-        //Push 3 units into position array
-        for (let x = 0; x < startLength; x++) {
-            snake.position.push({
-                i: s_i,
-                j: s_j
-            })
-            s_j--;
-        };
     }
-};
 
-//Snake convenience function: Checks if given coordinate is in the snake
-function isInSnake(i, j) {
-    let isInSnake = false;
-    for (let x = 1; x < snake.position.length; x++) {
-        if (i === snake.position[x].i &&
-            j === snake.position[x].j) {
-            isInSnake = true;
+    setDirection(d){
+        this.direction=d;
+    }
+
+    //Push a new segment into the snake
+    pushSegment(coordinate){
+        this.position.push(coordinate);
+    }
+
+    //Checks if given coordinate is in snake;
+    isInSnake(i, j, includeHead=false){
+        let isInSnake = false;
+        let startIndex = includeHead ? 0 : 1; 
+        for (let x = startIndex; x < this.position.length; x++) {
+            if (i === this.position[x].i &&
+                j === this.position[x].j) {
+                isInSnake = true;
+            }
         }
+        return isInSnake;
     }
-    return isInSnake;
+    setDisplay(){
+        this.position.forEach((seg,idx) => {
+            let n = getSquareNode(seg.i, seg.j);
+            if(idx==0){
+                n.style.backgroundColor = this.headColor;    
+            } else {
+                n.style.backgroundColor = snakeColor;
+            }
+                
+        });
+    }
+
 }
 
+
 //Checks if the snake is OOB
-function isSnakeOOB(){
-    if (snake.position[0].i > gridSize - 1 //east border
+function isSnakeOOB(snakeObj){
+    if (snakeObj.position[0].i > gridSize - 1 //east border
         ||
-        snake.position[0].i < 0 //west border
+        snakeObj.position[0].i < 0 //west border
         ||
-        snake.position[0].j > gridSize - 1 //south border
+        snakeObj.position[0].j > gridSize - 1 //south border
         ||
-        snake.position[0].j < 0 //north border
+        snakeObj.position[0].j < 0 //north border
     ) {
         return true;
     } else {
@@ -155,32 +161,27 @@ function isSnakeOOB(){
 }
 
 //Check if snake runs into itself
-function isSnakeHitSelf() {
-    let i = snake.position[0].i;
-    let j = snake.position[0].j;
-    return isInSnake(i, j);
+function isSnakeHitSelf(snakeObj) {
+    let i = snakeObj.position[0].i;
+    let j = snakeObj.position[0].j;
+    return snakeObj.isInSnake(i, j);
 }
 
 
-let apple = {
-    position: {
-        i: Math.floor(Math.random() * gridSize),
-        j: Math.floor(Math.random() * gridSize)
-    },
-    //Resets position of apple 
-    resetPosition: function () {
-
-        let i = null;
-        let j = null;
-        
-        //New apple location needs to be outside of snake
-        do {
-            i = Math.floor(Math.random() * gridSize);
-            j = Math.floor(Math.random() * gridSize);
-        } while (isInSnake(i, j))
-        this.position.i = i;
-        this.position.j = j;
+class Fruit{
+    constructor(){
+        this.position = getEmptyCoordinate();
     }
+    resetPosition(){
+        this.position = getEmptyCoordinate();
+    }
+}
+
+//Generate random empty coordinate
+function getEmptyCoordinate(){
+    let c = new Coordinate(Math.floor(Math.random() * gridSize),Math.floor(Math.random() * gridSize))
+    //NEED TO CHECK GAME BOARD FOR EMPTY COORDINATES
+    return c
 }
 
 //------GAME DOM MANIPULATION
@@ -209,52 +210,65 @@ function isAtApple() {
     }
 }
 
-//Displays snake on gameboard based on its coordinates
-function setSnakeDisplay() {
-    snake.position.forEach((seg,idx) => {
-        let n = getSquareNode(seg.i, seg.j);
-        if(1==0){
-            // n.style.backgroundImage = "url('./icons/cat.svg')";
-            // n.style.backgroundSize = "cover"
-            // n.style.backgroundRepeat = "no-repeat"
-            let cat = document.createElement("img");
-            cat.src = "./icons/cat.svg";
-            // cat.style.position = "absolute";
-            cat.style.width = "20px"
-            cat.style.height = "auto"
-            cat.style.margin = "0 auto";
-            n.appendChild(cat)
-        } else {
-            n.style.backgroundColor = snakeColor;
-        }
-        
-    });
-}
-
-//clears snake display of given position array
-function clearSnakeDisplay(posArray) {
-    posArray.forEach(seg => {
-        let n = getSquareNode(seg.i, seg.j);
-        if(n!=undefined){
-            n.style.backgroundColor = "transparent";
-            n.style.backgroundImage = "none";
-            n.innerHTML ="";
-        }
-    });
-}
-
 //Clears the gameboard of all objects (snake & apple)
-function resetGameBoard(){
+function clearGameBoardDisplay(){
     let gs = document.querySelectorAll(".game-square")
     gs.forEach( n => {
         n.style.backgroundColor="transparent"
     });
-    // setUpGameBoard();
-
 }
 
 
+class AISnake extends Snake{
+    constructor(i=start_i-5,j=start_j){
+        super(i,j);
+        this.headColor="#e79c2a"
+    }
+    autoMove(coordinate){
+        //Set direction based on current scenario
+        // this.direction=D[Math.floor(Math.random()*3)]
+        console.log(coordinate);
+        let di = coordinate.i ;
+        let dj = coordinate.j ;
+        let i = this.position[0].i;
+        let j = this.position[0].j;
+        console.log(i,j)
+        //southwest quadrant, snake heading east
+        if(di>i && dj>j){
+            this.direction = di-i > dj-j ? "s" : "e";
+        }
+
+        this.move();
+    }
+}
+
+//Intialize new player snake
+let playerSnake = new Snake();
+setControls(playerSnake);
+let AI = new AISnake();
+
+playerSnake.setDisplay();
+AI.setDisplay();
+
 //----------------MAIN GAME FLOW
+let gamePlay = function (){
+    
+    let mainInterval = setInterval(step, clock);
+    
+    function step(){
+        let currSnakePosition = copyPosArray(playerSnake.position);
+        clearGameBoardDisplay();
+        playerSnake.move();
+        AI.autoMove(getEmptyCoordinate());
+        playerSnake.setDisplay();
+        AI.setDisplay();
+    }
+}
+
+
+
+
+
 //Refresh and update snake position every clock
 let moveSnake = function () {
 
@@ -387,35 +401,35 @@ let startGame = function () {
 
 
 //Show start screen
-setStartDisplay();
+// setStartDisplay();
 //Add event listener
-startGame();
+// startGame();
 
 //Assign keyboard controls
-function setControls() {
+function setControls(snakeObj) {
     document.addEventListener("keyup", arrowHit)
 
     function arrowHit() {
         console.log("arrow hit")
         switch (event.keyCode) {
             case 39: //east
-                if(snake.direction != "w"){
-                    snake.setDirection("e");
+                if(snakeObj.direction != "w"){
+                    snakeObj.setDirection("e");
                 }
                 break;
             case 38: //north
-                if(snake.direction != "s"){
-                    snake.setDirection("n");
+                if(snakeObj.direction != "s"){
+                    snakeObj.setDirection("n");
                 }
                 break;
             case 37: //west
-            if(snake.direction != "e"){
-                snake.setDirection("w");
+            if(snakeObj.direction != "e"){
+                snakeObj.setDirection("w");
             }
                 break;
             case 40: //south
-            if(snake.direction != "n"){
-                snake.setDirection("s");
+            if(snakeObj.direction != "n"){
+                snakeObj.setDirection("s");
             }                
                 break;
         }
