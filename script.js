@@ -303,6 +303,9 @@ class AISnake extends Snake{
             }
         }
 
+        //CHECK IF NEW DIRECTION COLLIDES WITH ITSELF
+        //IF SO, CHOOSE A NEW DIRECTION THAT DOESN'T
+
         this.move();
 
         if(fruit.position.i == this.position[0].i
@@ -338,6 +341,11 @@ let gamePlay = function (){
         playerSnake.setDisplay();
         AI.setDisplay();
         // AIapple.setDisplay();
+
+        //player snake grows if eat apple
+
+        //if AI snake collides with player body, it dies
+        //if player snake collides with 
     }
 }
 
