@@ -175,6 +175,11 @@ class Fruit{
     resetPosition(){
         this.position = getEmptyCoordinate();
     }
+    setDisplay(){
+        let n = getSquareNode(this.position.i, this.position.j);
+        // n.style.backgroundImage = "url('./icons/apple.svg')"
+        n.style.backgroundColor = "#e56345"
+    }
 }
 
 //Generate random empty coordinate
@@ -224,16 +229,16 @@ class AISnake extends Snake{
         super(i,j);
         this.headColor="#e79c2a"
     }
-    autoMove(coordinate){
+    autoMove(fruit){
         //Set direction based on current scenario
         // this.direction=D[Math.floor(Math.random()*3)]
-        console.log(coordinate);
-        let di = coordinate.i ;
-        let dj = coordinate.j ;
+        // console.log(coordinate);
+        let di = fruit.position.i ;
+        let dj = fruit.position.j ;
         let i = this.position[0].i;
         let j = this.position[0].j;
         console.log(i,j)
-        //southwest quadrant
+        //southeast quadrant
         if(di>=i && dj>=j){
             switch(this.direction){
                 case "s":
@@ -242,14 +247,68 @@ class AISnake extends Snake{
                     this.direction = j==dj ? "s" : "e";    
                     break;
                 case "n":
+                    this.direction = "e";
+                    break;
                 case "w":
-                    this.direction = Math.random() >= 0.5 ? "e" : "s";
+                    this.direction = "s";
                     break;
             }
-            
+            //southwest quadrant
+        } else if (di>=i && dj<=j) {
+            switch(this.direction){
+                case "s":
+                    this.direction = i==di ? "w" : "s"
+                    break;
+                case "w":
+                    this.direction = j==dj ? "s" : "w";    
+                    break;
+                case "e":
+                    this.direction = "s";
+                    break;
+                case "n":
+                    this.direction = "w";
+                    break;
+            }
+            //northwest quadrant
+        } else if (di<=i && dj<=j){
+            switch(this.direction){
+                case "n":
+                    this.direction = i==di ? "w" : "n"
+                    break;
+                case "w":
+                    this.direction = j==dj ? "n" : "w";    
+                    break;
+                case "e":
+                    this.direction = "n";
+                    break;
+                case "s":
+                    this.direction = "w";
+                    break;
+            }
+            //northeast quadrant
+        } else if (di<=i && dj>=j){
+            switch(this.direction){
+                case "n":
+                    this.direction = i==di ? "e" : "n"
+                    break;
+                case "e":
+                    this.direction = j==dj ? "n" : "e";    
+                    break;
+                case "s":
+                    this.direction = "e";
+                    break;
+                case "w":
+                    this.direction = "n";
+                    break;
+            }
         }
 
         this.move();
+
+        if(fruit.position.i == this.position[0].i
+            && fruit.position.j == this.position[0].j) {
+                fruit.resetPosition();
+            }
     }
 }
 
@@ -259,8 +318,12 @@ setControls(playerSnake);
 let AI = new AISnake();
 AI.direction = "n";
 
+let AIapple = new Fruit();
+AIapple.position = new Coordinate(40,40);
+AIapple.setDisplay();
 playerSnake.setDisplay();
 AI.setDisplay();
+
 
 //----------------MAIN GAME FLOW
 let gamePlay = function (){
@@ -271,9 +334,10 @@ let gamePlay = function (){
         let currSnakePosition = copyPosArray(playerSnake.position);
         clearGameBoardDisplay();
         playerSnake.move();
-        AI.autoMove(new Coordinate(40,40));
+        AI.autoMove(AIapple);
         playerSnake.setDisplay();
         AI.setDisplay();
+        // AIapple.setDisplay();
     }
 }
 
