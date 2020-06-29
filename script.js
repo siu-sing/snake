@@ -7,6 +7,10 @@ const startLength = 10;
 //Snake head starting position
 const start_i = Math.floor(gridSize / 2);
 const start_j = startLength + 1;
+
+//Respawn delay in ms
+const respawnDelay = 3000;
+
 //Rounds
 let gameRound = 0;
 //Snake colour
@@ -472,34 +476,47 @@ setControls(playerSnake);
 let playerApple = new Fruit();
 playerApple.color = "#5a3d55";
 
-//Initialize new AI Snake
-let AI = new AISnake();
-snakeList.push(AI);
-//Initialize dummy fruit for AI
-let AIapple = new Fruit();
-
 //Initialize all displays
 playerSnake.setDisplay();
 
 
-let mainInterval = null;
+let battleInterval = null;
+let classicInterval = null;
 
 document.getElementById("pause").addEventListener('click', function () {
-    clearInterval(mainInterval);
+    clearInterval(battleInterval);
 });
 
-document.getElementById("play").addEventListener('click', function () {
-    gamePlayBattle();
+document.getElementById("play-classic").addEventListener('click', function () {
+    gamePlayClassic();
+});
+
+
+let AI = null;
+let AIapple = null;
+document.getElementById("play-battle").addEventListener('click', function () {
+    
+    //Initialize new AI Snake
+    AI = new AISnake();
+    snakeList.push(AI);
+    
+    //Initialize dummy fruit for AI
+    AIapple = new Fruit();
+
     AI.setDisplay();
     playerApple.setDisplay();
     AIapple.setDisplay();
+
+    //Began Battle Snakes
+    gamePlayBattle();
+    
 
 });
 
 //----------------MAIN GAME FLOW
 let gamePlayBattle = function () {
 
-    mainInterval = setInterval(step, clock);
+    battleInterval = setInterval(step, clock);
 
     function step() {
         let currSnakeLastSeg = null;
@@ -528,7 +545,7 @@ let gamePlayBattle = function () {
             } else {
                 console.log(`Player Ded`);
             }
-            clearInterval(mainInterval);
+            clearInterval(battleInterval);
         } else {
             //Check conditions
 
@@ -547,7 +564,7 @@ let gamePlayBattle = function () {
                         AI = new AISnake();
                         AI.setDisplay();
                         AIapple.resetPosition();
-                    }, 3000);
+                    }, respawnDelay);
                 } else if (AI.isAtApple(AIapple)) {
                     AIapple.resetPosition();
                     AI.pushSegment(currAILastSeg);
@@ -570,45 +587,36 @@ let gamePlayBattle = function () {
 
 
 //Refresh and update snake position every clock
-let moveSnake = function () {
+let gamePlayClassic = function () {
 
-    let interval = setInterval(moveSnake, clock);
+    classicInterval = setInterval(step, clock);
 
-    function moveSnake() {
-
-        //Make a copy of the snake position array
-        let currPosArray = copyPosArray(snake.position);
-
-        //Display apple
-        setAppleDisplay();
+    function step() {
+        
+        //Store position of last segment of snake
+        let currSnakeLastSeg = null;
+        if (!playerSnake.isDead) {
+            currSnakeLastSeg = getLastSeg(playerSnake.position);
+        }
 
         //Move snake
-        snake.move();
+        playerSnake.move();
 
-        //If snake OOB, stop interval
-        if (isSnakeOOB() || isSnakeHitSelf()) {
-            console.log("snake ded");
-            clearInterval(interval);
-            apple.resetPosition();
-            setStartDisplay();
-            startGame();
+        //Player Snake Dies end interval
+        if (isSnakeOOB(playerSnake) || isSnakeHitSelf(playerSnake)
+        ) {
+            console.log(`Player Ded`);
+            clearInterval(classicInterval)
         } else {
-
-            //Clear snake from screen
-            clearSnakeDisplay(currPosArray);
-
-            //if hit apple, reset apple and increase length of snake
-            if (isAtApple()) {
-                score++;
-                document.getElementById("score").innerHTML = `${score}`
-                clearAppleDisplay();
-                apple.resetPosition();
-                setAppleDisplay();
-                snake.pushSeg(getLastSeg(currPosArray));
+            if (playerSnake.isAtApple(playerApple)) {
+                playerApple.resetPosition();
+                playerSnake.pushSegment(currSnakeLastSeg);
             }
-
-            //update display
-            setSnakeDisplay();
+            //Reset grid display
+            clearGameBoardDisplay();
+            //Show display
+            playerSnake.setDisplay();
+            playerApple.setDisplay();
         }
     }
 }
