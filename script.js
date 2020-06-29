@@ -1,5 +1,5 @@
 //Size of game area
-const gridSize = 30;
+const gridSize = 40;
 //time taken for each refresh in ms
 const clock = 100;
 //Starting snake length
@@ -449,8 +449,6 @@ function getEmptyCoordinate() {
     }
 }
 
-
-
 //------ GAME DOM MANIPULATION
 //Clears the gameboard of all objects (snake & apple)
 function clearGameBoardDisplay() {
@@ -462,55 +460,55 @@ function clearGameBoardDisplay() {
 
 //------ PRE GAME SET UP
 
+//Initialize game objects
 //Array to store list of active snakes
 let snakeList = [];
-
-//Intialize new player snake
-let playerSnake = new Snake();
-snakeList.push(playerSnake);
-
-//Initialize fruit for player
-let playerApple = new Fruit();
-
-//Initialize all displays
-playerSnake.setDisplay();
-
-//Initialize interval variables
-let battleInterval = null;
+let playerSnake = null
+let playerApple = null;
 let classicInterval = null;
-
-//Initialize AI objects
 let AI = null;
 let AIapple = null;
+let battleInterval = null;
+
 
 //Add Event Listeners
 document.getElementById("pause").addEventListener('click', function () {
-    clearInterval(battleInterval);
+    clearInterval(battleInterval);    
     clearInterval(classicInterval);
 });
 
 document.getElementById("play-classic").addEventListener('click', function () {
-    //Initialize controls
+    
+    playerSnake = new Snake();
+    snakeList.push(playerSnake);
+    playerSnake.setDisplay();
+    
     setControls(playerSnake);
+
+    playerApple = new Fruit();
+    playerApple.setDisplay();
+    
     gamePlayClassic();
 });
 
 document.getElementById("play-battle").addEventListener('click', function () {
     
+    playerSnake = new Snake();
+    snakeList.push(playerSnake);
+    playerSnake.setDisplay();
+    
+    playerApple = new Fruit();
+    playerApple.setDisplay();
+
     //Initialize controls
     setControls(playerSnake);
 
     //Initialize new AI Snake
     AI = new AISnake();
     snakeList.push(AI);
-    
-    //Initialize fruit for AI
     AIapple = new Fruit();
     AIapple.color = AIfruitColor;
-
-    //Display all game objects
     AI.setDisplay();
-    playerApple.setDisplay();
     AIapple.setDisplay();
 
     //Began Battle Snakes
@@ -680,7 +678,6 @@ function clearStartDisplay() {
 }
 
 
-
 //Add event listener for space bar hit
 let startGame = function () {
     document.addEventListener("keyup", spaceBarHit)
@@ -704,6 +701,9 @@ let startGame = function () {
         }
     }
 }
+
+
+//------ KEYBOARD CONTROLS
 
 //Assign keyboard controls
 function setControls(snakeObj) {
