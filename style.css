@@ -17,12 +17,17 @@ html body {
     position: relative;
     transform: translate(0,220px);
     z-index:9;
-    opacity: 0.9;
     /* justify-content: space-between; */
+}
+
+.selection{
+    opacity: 0.7;
 }
 
 .selection:hover {
     top: -2px;
+    color: black;
+    opacity: 1;
     /* border: 1px solid black; */
 }
 
@@ -30,22 +35,6 @@ html body {
     all:unset;
 }
 
-/* .pulsate {
-    -webkit-animation: pulsate 1s ease-out;
-    -webkit-animation-iteration-count: infinite; 
-    opacity: 1.0;
-}
-@-webkit-keyframes pulsate {
-    0% { 
-        opacity: 1.0;
-    }
-    50% { 
-        opacity: 0.7;
-    }
-    100% { 
-        opacity: 1.0;
-    }
-} */
 
 
 #game-board {

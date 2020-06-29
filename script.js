@@ -530,8 +530,39 @@ document.getElementById("play-classic").addEventListener('click', function () {
     playerApple = new Fruit();
     playerApple.setDisplay();
     
-    gamePlayClassic();
+    // let count = 3;
+    // let countdownTimer = function(){
+    //     let countdownInterval = setInterval(countdown,900);
+    //     function countdown(){
+    //         if(count===0){
+    //             clearInterval(countdownInterval);
+    //             gamePlayClassic();
+    //         } else {
+    //             console.log(count);
+    //             count--;
+    //         }
+    //     }
+    // }
+    countdownTimer(gamePlayClassic);
+    
 });
+
+
+let count = 3;
+let countdownTimer = function(gamePlay){
+    let countdownInterval = setInterval(countdown,900);
+    function countdown(){
+        if(count===0){
+            clearInterval(countdownInterval);
+            gamePlay();
+            count = 3;
+        } else {
+            console.log(count);
+            count--;
+        }
+    }
+}
+
 
 document.getElementById("play-battle").addEventListener('click', function () {
     clearDemo();
@@ -554,7 +585,7 @@ document.getElementById("play-battle").addEventListener('click', function () {
     AIapple.setDisplay();
 
     //Began Battle Snakes
-    gamePlayBattle();
+    countdownTimer(gamePlayBattle);
 });
 
 //------ BATTLE SNAKES GAMEPLAY
@@ -659,90 +690,6 @@ let gamePlayClassic = function () {
         }
     }
 }
-
-
-//Get middle square
-let startDisp = getSquareNode(start_i - 2, start_j - 3);
-let dispP = document.createElement("p");
-let titleN = document.createElement("h1");
-
-//Set start display
-function setStartDisplay() {
-    startDisp = getSquareNode(start_i - 2, start_j - 3);
-    //Set style for display
-    startDisp.style.lineHeight = "0";
-    // startDisp.style.position = "relative";
-
-    //Create p element for text display
-
-    dispP.classList.remove("fade-out")
-    dispP.classList.add("fade-in")
-    dispP.classList.add("start-display");
-    startDisp.appendChild(dispP);
-
-    let str = "";
-    if (gameRound > 0) {
-        str = "Hit space bar to restart.";
-    } else {
-        str = "Hit space bar to start.";
-    }
-    dispP.innerHTML = str;
-    dispP.style.position = "absolute";
-
-
-
-    //Create title display
-    let titleP = getSquareNode(1, start_j - 3);
-    titleP.style.lineHeight = "0";
-    titleN.classList.remove("fade-out")
-    titleN.classList.add("fade-in")
-    titleP.appendChild(titleN);
-    titleN.innerHTML = "Snake.";
-    titleN.style.position = "absolute";
-    titleN.classList.add("start-display");
-
-    //Inialize baby snake
-    if (gameRound === 0) {
-        snake.resetSnake();
-        setSnakeDisplay();
-    }
-}
-
-//Clear start display
-function clearStartDisplay() {
-    // startDisp.innerHTML = "";
-    // titleN.innerHTML = "";
-    dispP.classList.remove("fade-in");
-    dispP.classList.add("fade-out");
-    titleN.classList.remove("fade-in");
-    titleN.classList.add("fade-out");
-}
-
-
-//Add event listener for space bar hit
-let startGame = function () {
-    document.addEventListener("keyup", spaceBarHit)
-
-    function spaceBarHit() {
-        //space bar is 32
-        if (event.keyCode === 32) {
-
-            clearStartDisplay();
-            if (gameRound > 0) {
-                resetGameBoard();
-                snake.resetSnake();
-            }
-            gameRound++;
-            score = 0;
-            document.getElementById("round-no").innerHTML = `Round ${gameRound}`
-            document.getElementById("score").innerHTML = `${score}`
-            setControls();
-            moveSnake();
-            document.removeEventListener("keyup", spaceBarHit);
-        }
-    }
-}
-
 
 //------ KEYBOARD CONTROLS
 

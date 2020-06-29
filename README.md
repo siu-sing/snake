@@ -79,6 +79,19 @@ An object method `resetPosition()` was created to reset the position of the appl
 - AI Snake that makes random turns on gameboard
 - AI Snake dies on contact with player snake body or wall
 
+### Battle Snake
+- implemented snakes and fruits as classes
+- AISnake extends snake to cater for the movement logic
+- autoMove() logic
+- Scoring?
+- Most Challenging
+- What would i have done differently
+- Existing problems
+- Lessons learnt
+    - UX/UI design takes alot of effort
+    - Work in sprints/mini todo lists to not get distracted
+    - Find the right balance between implementation and longevity
+
 ### Additional
 - AI snake can grow based on the same mechanics as player snake
 - AI movements are more intelligent 
