@@ -1,14 +1,17 @@
-
+    
 html body {
     background-color: #b3a996;
 }
+h2 {
+    font-size: 80px;
+    line-height: 0;
+}
+
 
 #game-title{
     position: relative;
     transform: translate(0,180px);
     z-index: 9;
-    font-size: 80px;
-    line-height: 0;
     opacity: 0.8;
 
 }
@@ -35,6 +38,12 @@ html body {
     all:unset;
 }
 
+#countdown-display {
+    position: relative;
+    transform: translate(0,220px);
+    z-index: 9;
+    text-align: center;
+}
 
 
 #game-board {
@@ -42,11 +51,6 @@ html body {
     background-color: #f4e6b3;
 }
 
-.start-display{
-    color: #29383b;
-    /* color: blue; */
-    
-}
 
 .fade-in{
     animation: fadeIn ease 0.8s;
@@ -61,7 +65,7 @@ html body {
     color: #29383b;
     /* color: blue; */
     opacity:0.0;
-    animation: fadeOut ease 0.8s;
+    animation: fadeOut ease 1s;
 }
 
 @keyframes fadeOut {

@@ -548,16 +548,21 @@ document.getElementById("play-classic").addEventListener('click', function () {
 });
 
 
-let count = 3;
-let countdownTimer = function(gamePlay){
-    let countdownInterval = setInterval(countdown,900);
+let countdownTimer = function(gamePlay, count=3, go="Go!"){
+    let countdownInterval = setInterval(countdown,800);
     function countdown(){
-        if(count===0){
+        if(count===-1){
             clearInterval(countdownInterval);
             gamePlay();
             count = 3;
         } else {
-            console.log(count);
+            let cddParent = document.getElementById("countdown-display").parentElement
+            cddParent.innerHTML = "";
+            let h2 = document.createElement("h2");
+            h2.id = "countdown-display"
+            h2.innerText = count===0 ? go : count;
+            cddParent.appendChild(h2);
+            h2.classList.add("fade-out");
             count--;
         }
     }

@@ -13,6 +13,7 @@
 </head>
 <header>
 </header>
+
 <body>
     <div class="container">
         <div class="row">
@@ -22,20 +23,25 @@
     <div class="container">
         <div class="row">
             <div class="col-auto p-0 mx-auto">
-                    <h2 id="game-title" class="pulsate">Snake</h2>
+                <h2 id="game-title" class="pulsate">Snake</h2>
             </div>
         </div>
         <div class="row">
             <div class="col-auto p-0 mx-auto">
-                    <div class="row game-select">
-                        <div class="col selection">
-                            <button id="play-classic">Classic</button>
-                            
-                        </div>
-                        <div class="col selection">
-                            <button id="play-battle">Battle</button>
-                        </div>
+                <div class="row game-select">
+                    <div class="col selection">
+                        <button id="play-classic">Classic</button>
+
                     </div>
+                    <div class="col selection">
+                        <button id="play-battle">Battle</button>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <h2 id="countdown-display">&nbsp;</h2>
+                </div>
+
             </div>
         </div>
         <div class="row">
@@ -50,11 +56,12 @@
     <div class="container">
         <!-- Write your code here -->
         <div class="row">
-            <div class="col-auto p-0 mx-auto" id = "game-board">
+            <div class="col-auto p-0 mx-auto" id="game-board">
             </div>
         </div>
     </div>
 
 </body>
 <script src="script.js"></script>
+
 </html>
