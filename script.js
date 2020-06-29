@@ -13,8 +13,13 @@ const respawnDelay = 3000;
 
 //Rounds
 let gameRound = 0;
-//Snake colour
+//Default snake colours
 let snakeColor = "#29383b";
+let playerSnakeHeadColor = "hsl(110,39%,50%)";
+let AISnakeHeadColor = "hsl(261, 70%, 80%)";
+//Default fruit color
+let fruitColor = "hsl(110,70%,50%)";
+let AIfruitColor = "hsl(261, 79%, 50%)";
 //Score
 let score = 0;
 //directions
@@ -110,7 +115,7 @@ class Coordinate {
 class Snake {
     constructor(i = start_i, j = start_j) {
         this.position = []; //array of coordinates
-        this.headColor = "#a2de96";
+        this.headColor = playerSnakeHeadColor;
         this.direction = "e";
         this.isDead = false;
         //Baby snake
@@ -228,6 +233,8 @@ class Snake {
 
 }
 
+
+//------ SNAKE HELPER FUNCTIONS
 //Checks if the snake is OOB
 function isSnakeOOB(snakeObj) {
     if (snakeObj.position[0].i > gridSize - 1 //east border
@@ -244,85 +251,10 @@ function isSnakeOOB(snakeObj) {
     }
 }
 
-//Check if snake runs into itself
-function isSnakeHitSelf(snakeObj) {
-    let i = snakeObj.position[0].i;
-    let j = snakeObj.position[0].j;
-    return snakeObj.isInSnake(i, j);
-}
-
-let testFruitCoord = [];
-// testFruitCoord.push(new Coordinate(25,25));
-// testFruitCoord.push(new Coordinate(18, 25));
-// testFruitCoord.push(new Coordinate(40, 22));
-
-class Fruit {
-    constructor() {
-        this.position = getEmptyCoordinate();
-        this.color = "#e56345"
-    }
-    resetPosition() {
-        if (testFruitCoord.length > 0) {
-            this.position = testFruitCoord.shift();
-        } else {
-            this.position = getEmptyCoordinate();
-        }
-
-    }
-    setDisplay() {
-        let n = getSquareNode(this.position.i, this.position.j);
-        // n.style.backgroundImage = "url('./icons/apple.svg')"
-        n.style.backgroundColor = this.color;
-    }
-}
-
-//Generate random empty coordinate
-function getEmptyCoordinate() {
-    if (snakeList.length > 0) {
-        let success = true;
-        let c = null;
-        do {
-            c = new Coordinate(Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize))
-            snakeList.forEach(s => function () {
-                success = !s.isInSnake(c.i, c.j, true)
-            });
-            return c
-        } while (success = false);
-    } else {
-        return new Coordinate(Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize));
-    }
-}
-
-//------GAME DOM MANIPULATION
-
-//Set apple display
-function setAppleDisplay() {
-    let n = getSquareNode(apple.position.i, apple.position.j);
-    // n.style.backgroundImage = "url('./icons/apple.svg')"
-    n.style.backgroundColor = "#e56345"
-}
-
-//Clear apple display
-function clearAppleDisplay() {
-    let n = getSquareNode(apple.position.i, apple.position.j);
-    // n.style.backgroundImage = "none";
-    n.style.backgroundColor = "none"
-}
-
-//Clears the gameboard of all objects (snake & apple)
-function clearGameBoardDisplay() {
-    let gs = document.querySelectorAll(".game-square")
-    gs.forEach(n => {
-        n.style.backgroundColor = "transparent"
-    });
-}
-
-
-
 class AISnake extends Snake {
     constructor(i = start_i - 5, j = start_j - 5) {
         super(i, j);
-        this.headColor = "#e79c2a"
+        this.headColor = AISnakeHeadColor;
         this.position = [];
         for (let x = 0; x < startLength - 5; x++) {
             this.position.push(new Coordinate(i, j))
@@ -465,55 +397,127 @@ class AISnake extends Snake {
     }
 }
 
+//Check if snake runs into itself
+function isSnakeHitSelf(snakeObj) {
+    let i = snakeObj.position[0].i;
+    let j = snakeObj.position[0].j;
+    return snakeObj.isInSnake(i, j);
+}
+
+
+//Fruit coordinate for testing
+let testFruitCoord = [];
+// testFruitCoord.push(new Coordinate(25,25));
+// testFruitCoord.push(new Coordinate(18, 25));
+// testFruitCoord.push(new Coordinate(40, 22));
+
+class Fruit {
+    constructor() {
+        this.position = getEmptyCoordinate();
+        this.color = fruitColor;
+    }
+    resetPosition() {
+        if (testFruitCoord.length > 0) {
+            this.position = testFruitCoord.shift();
+        } else {
+            this.position = getEmptyCoordinate();
+        }
+
+    }
+    setDisplay() {
+        let n = getSquareNode(this.position.i, this.position.j);
+        // n.style.backgroundImage = "url('./icons/apple.svg')"
+        n.style.backgroundColor = this.color;
+    }
+}
+
+//------ FRUIT HELPER FUNCTIONS
+//Generates a random coordinate without any snake bodies
+function getEmptyCoordinate() {
+    if (snakeList.length > 0) {
+        let success = true;
+        let c = null;
+        do {
+            c = new Coordinate(Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize))
+            snakeList.forEach(s => function () {
+                success = !s.isInSnake(c.i, c.j, true)
+            });
+        } while (success = false);
+        return c;
+    } else {
+        return new Coordinate(Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize));
+    }
+}
+
+
+
+//------ GAME DOM MANIPULATION
+//Clears the gameboard of all objects (snake & apple)
+function clearGameBoardDisplay() {
+    let gs = document.querySelectorAll(".game-square")
+    gs.forEach(n => {
+        n.style.backgroundColor = "transparent"
+    });
+}
+
+//------ PRE GAME SET UP
+
+//Array to store list of active snakes
 let snakeList = [];
 
 //Intialize new player snake
 let playerSnake = new Snake();
 snakeList.push(playerSnake);
-setControls(playerSnake);
 
 //Initialize fruit for player
 let playerApple = new Fruit();
-playerApple.color = "#5a3d55";
 
 //Initialize all displays
 playerSnake.setDisplay();
 
-
+//Initialize interval variables
 let battleInterval = null;
 let classicInterval = null;
 
+//Initialize AI objects
+let AI = null;
+let AIapple = null;
+
+//Add Event Listeners
 document.getElementById("pause").addEventListener('click', function () {
     clearInterval(battleInterval);
+    clearInterval(classicInterval);
 });
 
 document.getElementById("play-classic").addEventListener('click', function () {
+    //Initialize controls
+    setControls(playerSnake);
     gamePlayClassic();
 });
 
-
-let AI = null;
-let AIapple = null;
 document.getElementById("play-battle").addEventListener('click', function () {
     
+    //Initialize controls
+    setControls(playerSnake);
+
     //Initialize new AI Snake
     AI = new AISnake();
     snakeList.push(AI);
     
-    //Initialize dummy fruit for AI
+    //Initialize fruit for AI
     AIapple = new Fruit();
+    AIapple.color = AIfruitColor;
 
+    //Display all game objects
     AI.setDisplay();
     playerApple.setDisplay();
     AIapple.setDisplay();
 
     //Began Battle Snakes
     gamePlayBattle();
-    
-
 });
 
-//----------------MAIN GAME FLOW
+//------ BATTLE SNAKES GAMEPLAY
 let gamePlayBattle = function () {
 
     battleInterval = setInterval(step, clock);
@@ -581,12 +585,7 @@ let gamePlayBattle = function () {
     }
 }
 
-
-
-
-
-
-//Refresh and update snake position every clock
+//------ CLASSIC SNAKE GAMEPLAY
 let gamePlayClassic = function () {
 
     classicInterval = setInterval(step, clock);
@@ -706,13 +705,6 @@ let startGame = function () {
     }
 }
 
-
-
-//Show start screen
-// setStartDisplay();
-//Add event listener
-// startGame();
-
 //Assign keyboard controls
 function setControls(snakeObj) {
     document.addEventListener("keyup", arrowHit)
@@ -744,6 +736,8 @@ function setControls(snakeObj) {
     }
 }
 
+
+//Removes default arrow key behaviour on windows
 window.addEventListener("keydown", function (e) {
     // space and arrow keys
     if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
@@ -751,36 +745,3 @@ window.addEventListener("keydown", function (e) {
     }
 }, false);
 
-
-// function getBestDirection (AISnakeObj){
-//     let suggestedDir = null;
-//     //snake head position
-//     let headPosition = AISnakeObj.position[0]; 
-//     let currDir = AISnakeObj.direction;
-//     let newPos = translate(headPosition.i, headPosition.j, currDir);
-//     //If intended direction collides with self
-//     if(AISnakeObj.isInSnake(newPos.i,newPos.j)==true){
-//         let dir = AISnakeObj.dirAtPosition(newPos.i,newPos.j);
-//         switch(currDir){
-//             case "n":
-//             case "s":
-
-//                 suggestedDir = dir=="w" ? "e" : "w"
-//                 break;
-//             case "e":
-//             case "w":
-//                 this.direction = dir=="s" ? "n" : "s"
-//                 break;
-//         }
-//     } else {
-//         return currDir;
-//     }
-//     //if same dir block, 
-//         //then check next best
-//         // if next best blocked, then take last option
-//     //base case, 2 out of three blocked, escape with the only possible path
-
-//     }
-
-//     //1 blocked, default
-// }
