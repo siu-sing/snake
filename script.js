@@ -7,14 +7,15 @@ const startLength = 10;
 //Snake head starting position
 const start_i = Math.floor(gridSize / 2);
 const start_j = startLength + 1;
-
 //Respawn delay in ms
 const respawnDelay = 3000;
+//Array to store list of active snakes
+let snakeList = [];
 
 //Rounds
 let gameRound = 0;
 //Default snake colours
-let snakeColor = "#29383b";
+let snakeColor = "rgba(41, 56, 59, 0.9)";
 let playerSnakeHeadColor = "hsl(110,39%,50%)";
 let AISnakeHeadColor = "hsl(261, 70%, 80%)";
 //Default fruit color
@@ -458,11 +459,53 @@ function clearGameBoardDisplay() {
     });
 }
 
-//------ PRE GAME SET UP
+
+//---------------- PRE START GAME 
+
+let demoInterval = null;
+let demoAI = null;
+demoSnake();
+function demoSnake() {
+    demoAI = new AISnake();
+    let demoApple = new Fruit();
+    demoApple.color = AIfruitColor;
+    demoAI.setDisplay();
+    demoApple.setDisplay();
+    let gamePlayDemo = function(){
+        demoInterval = setInterval(step,clock);
+        function step(){
+            let currAILastSeg = null;
+            currAILastSeg = getLastSeg(demoAI.position);
+            demoAI.autoMove(demoApple);
+            if (demoAI.isAtApple(demoApple)) {
+                demoApple.resetPosition();
+                demoAI.pushSegment(currAILastSeg);
+            }
+            if(demoAI.position.length>=20){
+                demoAI = new AISnake();
+            }
+            clearGameBoardDisplay();
+            demoAI.setDisplay();
+            demoApple.setDisplay();
+        }
+    }
+    gamePlayDemo();
+}
+
+//Clear demo snake and title displays
+function clearDemo(){
+    clearInterval(demoInterval);
+    clearGameBoardDisplay();
+    document.querySelector("#game-title").style.zIndex = "0";
+    document.querySelector(".game-select").style.zIndex = "0";
+}
+
+
+
+//------ GAME SET UP
 
 //Initialize game objects
-//Array to store list of active snakes
-let snakeList = [];
+
 let playerSnake = null
 let playerApple = null;
 let classicInterval = null;
@@ -470,15 +513,14 @@ let AI = null;
 let AIapple = null;
 let battleInterval = null;
 
-
 //Add Event Listeners
-document.getElementById("pause").addEventListener('click', function () {
-    clearInterval(battleInterval);    
-    clearInterval(classicInterval);
-});
+// document.getElementById("pause").addEventListener('click', function () {
+//     clearInterval(battleInterval);    
+//     clearInterval(classicInterval);
+// });
 
 document.getElementById("play-classic").addEventListener('click', function () {
-    
+    clearDemo();
     playerSnake = new Snake();
     snakeList.push(playerSnake);
     playerSnake.setDisplay();
@@ -492,7 +534,7 @@ document.getElementById("play-classic").addEventListener('click', function () {
 });
 
 document.getElementById("play-battle").addEventListener('click', function () {
-    
+    clearDemo();
     playerSnake = new Snake();
     snakeList.push(playerSnake);
     playerSnake.setDisplay();
@@ -618,7 +660,6 @@ let gamePlayClassic = function () {
     }
 }
 
-//---------------- PRE START GAME 
 
 //Get middle square
 let startDisp = getSquareNode(start_i - 2, start_j - 3);

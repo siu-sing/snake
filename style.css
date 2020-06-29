@@ -3,6 +3,51 @@ html body {
     background-color: #b3a996;
 }
 
+#game-title{
+    position: relative;
+    transform: translate(0,180px);
+    z-index: 9;
+    font-size: 80px;
+    line-height: 0;
+    opacity: 0.8;
+
+}
+
+.game-select {
+    position: relative;
+    transform: translate(0,220px);
+    z-index:9;
+    opacity: 0.9;
+    /* justify-content: space-between; */
+}
+
+.selection:hover {
+    top: -2px;
+    /* border: 1px solid black; */
+}
+
+.selection button {
+    all:unset;
+}
+
+/* .pulsate {
+    -webkit-animation: pulsate 1s ease-out;
+    -webkit-animation-iteration-count: infinite; 
+    opacity: 1.0;
+}
+@-webkit-keyframes pulsate {
+    0% { 
+        opacity: 1.0;
+    }
+    50% { 
+        opacity: 0.7;
+    }
+    100% { 
+        opacity: 1.0;
+    }
+} */
+
+
 #game-board {
     border: 3px solid #010101;
     background-color: #f4e6b3;
