@@ -1,5 +1,5 @@
 //Size of game area
-const gridSize = 50;
+const gridSize = 30;
 //time taken for each refresh in ms
 const clock = 100;
 //Starting snake length
@@ -51,22 +51,25 @@ function getLastSeg(posArray) {
 
 //Translates a given coordinate base on given direction and distance
 function translate(a, b, dir, distance = 1) {
-    let coordinate = { i: null, j: null };
+    let coordinate = {
+        i: null,
+        j: null
+    };
     switch (dir) {
         case "e":
             coordinate.i = a;
-            coordinate.j = b+(1*distance);
+            coordinate.j = b + (1 * distance);
             break;
         case "n":
-            coordinate.i = a-(1*distance);
+            coordinate.i = a - (1 * distance);
             coordinate.j = b;
             break;
         case "w":
             coordinate.i = a;
-            coordinate.j = b-(1*distance);
+            coordinate.j = b - (1 * distance);
             break;
         case "s":
-            coordinate.i = a+(1*distance);
+            coordinate.i = a + (1 * distance);
             coordinate.j = b;
             break;
     }
@@ -105,6 +108,7 @@ class Snake {
         this.position = []; //array of coordinates
         this.headColor = "#a2de96";
         this.direction = "e";
+        this.isDead = false;
         //Baby snake
         for (let x = 0; x < startLength; x++) {
             this.position.push(new Coordinate(i, j))
@@ -114,28 +118,33 @@ class Snake {
 
     //Update new position of each segment 
     move() {
-        //Starting from tail
-        for (let x = this.position.length - 1; x > 0; x--) {
-            this.position[x].i = this.position[x - 1].i
-            this.position[x].j = this.position[x - 1].j
-            this.position[x].dir = this.position[x - 1].dir
+        if (this.isDead) {
+            return;
+        } else {
+            //Starting from tail
+            for (let x = this.position.length - 1; x > 0; x--) {
+                this.position[x].i = this.position[x - 1].i
+                this.position[x].j = this.position[x - 1].j
+                this.position[x].dir = this.position[x - 1].dir
+            }
+            //Head position
+            this.position[0].dir = this.direction;
+            switch (this.direction) {
+                case "e":
+                    this.position[0].j++;
+                    break;
+                case "n":
+                    this.position[0].i--;
+                    break;
+                case "w":
+                    this.position[0].j--;
+                    break;
+                case "s":
+                    this.position[0].i++;
+                    break;
+            }
         }
-        //Head position
-        this.position[0].dir = this.direction;
-        switch (this.direction) {
-            case "e":
-                this.position[0].j++;
-                break;
-            case "n":
-                this.position[0].i--;
-                break;
-            case "w":
-                this.position[0].j--;
-                break;
-            case "s":
-                this.position[0].i++;
-                break;
-        }
+
     }
 
     setDirection(d) {
@@ -144,7 +153,11 @@ class Snake {
 
     //Push a new segment into the snake
     pushSegment(coordinate) {
-        this.position.push(coordinate);
+        if (this.isDead) {
+            return;
+        } else {
+            this.position.push(coordinate);
+        }
     }
 
     //Checks if given coordinate is in snake;
@@ -159,7 +172,7 @@ class Snake {
         }
         return isInSnake;
     }
-    dirAtPosition(i,j){
+    dirAtPosition(i, j) {
         let dir = null;
         for (let x = 0; x < this.position.length; x++) {
             if (i === this.position[x].i &&
@@ -170,15 +183,19 @@ class Snake {
         return dir
     }
     setDisplay() {
-        this.position.forEach((seg, idx) => {
-            let n = getSquareNode(seg.i, seg.j);
-            if (idx == 0) {
-                n.style.backgroundColor = this.headColor;
-            } else {
-                n.style.backgroundColor = snakeColor;
-            }
+        if (this.isDead) {
+            return;
+        } else {
+            this.position.forEach((seg, idx) => {
+                let n = getSquareNode(seg.i, seg.j);
+                if (idx == 0) {
+                    n.style.backgroundColor = this.headColor;
+                } else {
+                    n.style.backgroundColor = snakeColor;
+                }
 
-        });
+            });
+        }
     }
     isAtApple(fruitObj) {
         if (fruitObj.position.i == this.position[0].i &&
@@ -189,7 +206,7 @@ class Snake {
         }
     }
     //Returns position index of given segment coordinate
-    positionIndex(i,j){
+    positionIndex(i, j) {
         let index = null;
         for (let x = 0; x < this.position.length; x++) {
             if (i === this.position[x].i &&
@@ -200,9 +217,12 @@ class Snake {
         return index;
 
     }
+    kill() {
+        this.position = [];
+        this.isDead = true;
+    }
 
 }
-
 
 //Checks if the snake is OOB
 function isSnakeOOB(snakeObj) {
@@ -254,19 +274,19 @@ class Fruit {
 
 //Generate random empty coordinate
 function getEmptyCoordinate() {
-    if(snakeList.length > 0){
+    if (snakeList.length > 0) {
         let success = true;
         let c = null;
         do {
             c = new Coordinate(Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize))
-            snakeList.forEach(s => function() {
+            snakeList.forEach(s => function () {
                 success = !s.isInSnake(c.i, c.j, true)
             });
             return c
         } while (success = false);
     } else {
-        return new Coordinate(Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize));    
-    } 
+        return new Coordinate(Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize));
+    }
 }
 
 //------GAME DOM MANIPULATION
@@ -296,142 +316,148 @@ function clearGameBoardDisplay() {
 
 
 class AISnake extends Snake {
-    constructor(i = start_i - 5, j = start_j-5) {
+    constructor(i = start_i - 5, j = start_j - 5) {
         super(i, j);
         this.headColor = "#e79c2a"
         this.position = [];
-        for (let x = 0; x < startLength-5; x++) {
+        for (let x = 0; x < startLength - 5; x++) {
             this.position.push(new Coordinate(i, j))
             j--;
         };
 
     }
     //Checks if movement 1 unit in "dir" will result in snake
-    isNewPosInSnake(dir){
-        let newPos = translate(this.position[0].i,this.position[0].j, dir);
-        return this.isInSnake(newPos.i,newPos.j)
+    isNewPosInSnake(dir) {
+        let newPos = translate(this.position[0].i, this.position[0].j, dir);
+        return this.isInSnake(newPos.i, newPos.j)
     }
 
     autoMove(fruit) {
-        //Set direction based on current scenario
-        // this.direction=D[Math.floor(Math.random()*3)]
-        // console.log(coordinate);
-        let di = fruit.position.i;
-        let dj = fruit.position.j;
-        let i = this.position[0].i;
-        let j = this.position[0].j;
-        
-        //southeast quadrant
-        if (di >= i && dj >= j) {
-            switch (this.direction) {
-                case "s":
-                    this.direction = i == di ? "e" : "s"
-                case "e":
-                    this.direction = j == dj ? "s" : "e";
-                    break;
-                case "n":
-                    this.direction = "e";
-                    break;
-                case "w":
-                    this.direction = "s";
-                    break;
+
+
+        if (this.isDead) {
+            return;
+        } else {
+            //Set direction based on current scenario
+            // this.direction=D[Math.floor(Math.random()*3)]
+            // console.log(coordinate);
+            let di = fruit.position.i;
+            let dj = fruit.position.j;
+            let i = this.position[0].i;
+            let j = this.position[0].j;
+
+            //southeast quadrant
+            if (di >= i && dj >= j) {
+                switch (this.direction) {
+                    case "s":
+                        this.direction = i == di ? "e" : "s"
+                    case "e":
+                        this.direction = j == dj ? "s" : "e";
+                        break;
+                    case "n":
+                        this.direction = "e";
+                        break;
+                    case "w":
+                        this.direction = "s";
+                        break;
+                }
+                //southwest quadrant
+            } else if (di >= i && dj <= j) {
+                switch (this.direction) {
+                    case "s":
+                        this.direction = i == di ? "w" : "s"
+                        break;
+                    case "w":
+                        this.direction = j == dj ? "s" : "w";
+                        break;
+                    case "e":
+                        this.direction = "s";
+                        break;
+                    case "n":
+                        this.direction = "w";
+                        break;
+                }
+                //northwest quadrant
+            } else if (di <= i && dj <= j) {
+                switch (this.direction) {
+                    case "n":
+                        this.direction = i == di ? "w" : "n"
+                        break;
+                    case "w":
+                        this.direction = j == dj ? "n" : "w";
+                        break;
+                    case "e":
+                        this.direction = "n";
+                        break;
+                    case "s":
+                        this.direction = "w";
+                        break;
+                }
+                //northeast quadrant
+            } else if (di <= i && dj >= j) {
+                switch (this.direction) {
+                    case "n":
+                        this.direction = i == di ? "e" : "n"
+                        break;
+                    case "e":
+                        this.direction = j == dj ? "n" : "e";
+                        break;
+                    case "s":
+                        this.direction = "e";
+                        break;
+                    case "w":
+                        this.direction = "n";
+                        break;
+                }
             }
-            //southwest quadrant
-        } else if (di >= i && dj <= j) {
-            switch (this.direction) {
-                case "s":
-                    this.direction = i == di ? "w" : "s"
-                    break;
-                case "w":
-                    this.direction = j == dj ? "s" : "w";
-                    break;
-                case "e":
-                    this.direction = "s";
-                    break;
-                case "n":
-                    this.direction = "w";
-                    break;
+
+            //CHECK IF NEW DIRECTION COLLIDES WITH ITSELF
+            if (this.isNewPosInSnake(this.direction)) {
+                console.log("will collide")
+                let newPos = translate(this.position[0].i, this.position[0].j, this.direction);
+                console.log(`current position: ${this.position[0].i},${this.position[0].j}`)
+                console.log(`newPos: ${newPos.i}, ${newPos.j}`)
+                let dir = this.dirAtPosition(newPos.i, newPos.j);
+                console.log(`direction at position: ${dir}`)
+                switch (this.direction) {
+                    case "n":
+                    case "s":
+                        switch (dir) {
+                            case "w":
+                                this.direction = this.isNewPosInSnake("e") ? "w" : "e";
+                                break;
+                            case "e":
+                                this.direction = this.isNewPosInSnake("w") ? "e" : "w";
+                                break;
+                            case "s":
+                            case "n":
+                                this.direction = this.position[this.positionIndex(newPos.i, newPos.j) + 1].dir == "w" ? "e" : "w";
+                                break;
+                        }
+                        break;
+                    case "e":
+                    case "w":
+                        switch (dir) {
+                            case "s":
+                                this.direction = this.isNewPosInSnake("n") ? "s" : "n";
+                                break;
+                            case "n":
+                                this.direction = this.isNewPosInSnake("s") ? "n" : "s";
+                                break;
+                            case "e":
+                            case "w":
+                                this.direction = this.position[this.positionIndex(newPos.i, newPos.j) + 1].dir == "s" ? "n" : "s";
+                                break;
+
+                        }
+                        break;
+                }
+                console.log(`result: ${this.direction}`)
             }
-            //northwest quadrant
-        } else if (di <= i && dj <= j) {
-            switch (this.direction) {
-                case "n":
-                    this.direction = i == di ? "w" : "n"
-                    break;
-                case "w":
-                    this.direction = j == dj ? "n" : "w";
-                    break;
-                case "e":
-                    this.direction = "n";
-                    break;
-                case "s":
-                    this.direction = "w";
-                    break;
-            }
-            //northeast quadrant
-        } else if (di <= i && dj >= j) {
-            switch (this.direction) {
-                case "n":
-                    this.direction = i == di ? "e" : "n"
-                    break;
-                case "e":
-                    this.direction = j == dj ? "n" : "e";
-                    break;
-                case "s":
-                    this.direction = "e";
-                    break;
-                case "w":
-                    this.direction = "n";
-                    break;
-            }
+            //IF SO, CHOOSE A NEW DIRECTION THAT DOESN'T
+
+            this.move();
         }
-
-        //CHECK IF NEW DIRECTION COLLIDES WITH ITSELF
-        if(this.isNewPosInSnake(this.direction)){
-            console.log("will collide")
-            let newPos = translate(this.position[0].i,this.position[0].j, this.direction);
-            console.log(`current position: ${this.position[0].i},${this.position[0].j}`)
-            console.log(`newPos: ${newPos.i}, ${newPos.j}`)
-            let dir = this.dirAtPosition(newPos.i,newPos.j);
-            console.log(`direction at position: ${dir}`)
-            switch(this.direction){
-                case "n":
-                case "s":
-                    switch(dir){
-                        case "w":
-                            this.direction = this.isNewPosInSnake("e") ? "w" : "e";
-                            break;
-                        case "e":
-                            this.direction = this.isNewPosInSnake("w") ? "e" : "w";
-                            break;
-                        case "s":
-                        case "n":
-                            this.direction = this.position[this.positionIndex(newPos.i,newPos.j)+1].dir == "w" ? "e" : "w";
-                            break;
-                    }
-                    break;
-                case "e":
-                case "w":
-                    switch(dir){
-                        case "s":
-                            this.direction = this.isNewPosInSnake("n") ? "s" : "n";
-                            break;
-                        case "n":
-                            this.direction = this.isNewPosInSnake("s") ? "n" : "s";
-                            break;
-                        case "e":
-                        case "w":
-                            this.direction = this.position[this.positionIndex(newPos.i,newPos.j)+1].dir == "s" ? "n" : "s";
-                            break;
-
-                    }
-                    break;
-            }
-            console.log(`result: ${this.direction}`)
-        }
-        //IF SO, CHOOSE A NEW DIRECTION THAT DOESN'T
-
-        this.move();
     }
 }
 
@@ -454,66 +480,80 @@ let AIapple = new Fruit();
 
 //Initialize all displays
 playerSnake.setDisplay();
-playerApple.setDisplay();
-
-AI.setDisplay();
-AIapple.setDisplay();
-
 
 
 let mainInterval = null;
 
-document.getElementById("pause").addEventListener('click', function(){
+document.getElementById("pause").addEventListener('click', function () {
     clearInterval(mainInterval);
 });
 
-document.getElementById("play").addEventListener('click', function(){
-    gamePlay();
+document.getElementById("play").addEventListener('click', function () {
+    gamePlayBattle();
+    AI.setDisplay();
+    playerApple.setDisplay();
+    AIapple.setDisplay();
+
 });
 
 //----------------MAIN GAME FLOW
-let gamePlay = function () {
+let gamePlayBattle = function () {
 
     mainInterval = setInterval(step, clock);
 
     function step() {
-        let currSnakePosition = copyPosArray(playerSnake.position);
-        let currAIPosition = copyPosArray(AI.position);
+        let currSnakeLastSeg = null;
+        let currAILastSeg = null;
+
+        //Store position of last segment of each snake
+        if (!playerSnake.isDead) {
+            currSnakeLastSeg = getLastSeg(playerSnake.position);
+        }
+        if (!AI.isDead) {
+            currAILastSeg = getLastSeg(AI.position);
+        }
 
         //Move Snakes
         playerSnake.move();
         AI.autoMove(AIapple);
 
-        //Grow Snakes
-        if(playerSnake.isAtApple(playerApple)){
-            playerApple.resetPosition();
-            playerSnake.pushSegment(getLastSeg(currSnakePosition))
-        }
-        if(AI.isAtApple(AIapple)){
-            AIapple.resetPosition();
-            AI.pushSegment(getLastSeg(currAIPosition))
-        }
-
-        //Player snake go OOB
-        if(isSnakeOOB(playerSnake) 
-        || isSnakeHitSelf(playerSnake)
-        || AI.isInSnake(playerSnake.position[0].i,playerSnake.position[0].j,true)
-        ){
-            console.log(`Player Ded`);
+        //Player Snake Dies end main interval
+        if (isSnakeOOB(playerSnake) ||
+            isSnakeHitSelf(playerSnake) ||
+            AI.isInSnake(playerSnake.position[0].i, playerSnake.position[0].j, true)
+        ) {
+            if (playerSnake.position[0].i == AI.position[0].i &&
+                playerSnake.position[0].i == AI.position[0].i) {
+                console.log("Head on collision")
+            } else {
+                console.log(`Player Ded`);
+            }
             clearInterval(mainInterval);
         } else {
-            //if AI snake collides with player body, it dies
-            if(isSnakeHitSelf(AI) || playerSnake.isInSnake(AI.position[0].i,AI.position[0].j,true)){
-                console.log(`AI Ded`)
-                //AI DISAPPEAR
-                AI.position = [];
-                setTimeout(function() {
-                    AI = new AISnake();
-                    AIapple.resetPosition();
-                },10000);
-                
+            //Check conditions
+
+            //Player snake eats apple
+            if (playerSnake.isAtApple(playerApple)) {
+                playerApple.resetPosition();
+                playerSnake.pushSegment(currSnakeLastSeg);
             }
-            //if player snake collides with 
+
+            if (!AI.isDead) {
+                if (isSnakeHitSelf(AI) ||
+                    playerSnake.isInSnake(AI.position[0].i, AI.position[0].j, true)) {
+                    console.log(`AI Ded`)
+                    AI.kill();
+                    setTimeout(function () {
+                        AI = new AISnake();
+                        AI.setDisplay();
+                        AIapple.resetPosition();
+                    }, 3000);
+                } else if (AI.isAtApple(AIapple)) {
+                    AIapple.resetPosition();
+                    AI.pushSegment(currAILastSeg);
+                }
+            }
+            //Reset grid display
             clearGameBoardDisplay();
             //Show display
             playerSnake.setDisplay();
@@ -521,13 +561,9 @@ let gamePlay = function () {
             AI.setDisplay();
             AIapple.setDisplay();
         }
-
-
-
-
-
     }
 }
+
 
 
 
