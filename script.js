@@ -7,8 +7,6 @@ const startLength = 10;
 //Snake head starting position
 const start_i = Math.floor(gridSize / 2);
 const start_j = startLength + 1;
-//Respawn delay in ms
-const respawnDelay = 3000;
 //Array to store list of active snakes
 let snakeList = [];
 
@@ -110,7 +108,7 @@ function countdownTimer(gamePlay, count = 3, go = "Go!") {
 
 function respawnTimer(func, count = 3, go = "Go!") {
     let cddParent = document.getElementById("countdown");
-    let countdownInterval = setInterval(countdown, 1000);
+    let countdownInterval = setInterval(countdown, 1200);
 
     function countdown() {
         if (count === -1) {
@@ -121,8 +119,8 @@ function respawnTimer(func, count = 3, go = "Go!") {
         } else {
             cddParent.innerText = "";
             let h2 = document.createElement("p");
-            h2.id = "countdown-display"
-            h2.innerText = count === 0 ? "New snake has arrived" : `${count}`;
+            h2.id = "respawn-countdown"
+            h2.innerText = count === 0 ? "A new snake has arrived." : `${count}`;
             cddParent.appendChild(h2);
             h2.classList.add("fade-out");
             count--;
@@ -147,6 +145,41 @@ function setUpGameBoard() {
     }
 }
 setUpGameBoard();
+
+//---SCORING
+let scoreBoard = {
+    round:0,
+    score:0,
+    kills:0,
+    resetScore: function(){
+        // this.round=0;
+        this.score=0;
+        this.kills=0;
+    }
+}
+
+function updateScoreDisplay() {
+    let rd = document.getElementById("round-display");
+    let sd = document.getElementById("score-display");
+    let kd = document.getElementById("kills-display");
+    rd.innerText=scoreBoard.round;
+    sd.innerText=scoreBoard.score;
+    kd.innerText=scoreBoard.kills;
+}
+
+//Display=true will force set it to display
+function toggleScoreDisplay(display=false) {
+    let sb = document.getElementById("score-board");
+    if (display){
+        sb.style.visibility="visible";
+    } else {
+        if(sb.style.visibility=="visible"){
+            sb.style.visibility="hidden";    
+        } else {
+            sb.style.visibility="visible";    
+        }
+    }
+}
 
 
 //---GAME OBJECTS
@@ -315,7 +348,6 @@ class AISnake extends Snake {
     }
 
     autoMove(fruit) {
-
 
         if (this.isDead) {
             return;
@@ -561,8 +593,6 @@ function toggleStartMenu() {
 }
 
 
-
-
 //------ GAME SET UP
 
 //Initialize game objects
@@ -574,34 +604,18 @@ let AI = null;
 let AIapple = null;
 let battleInterval = null;
 
-//Add Event Listeners
-// document.getElementById("pause").addEventListener('click', function () {
-//     clearInterval(battleInterval);    
-//     clearInterval(classicInterval);
-// });
 
+//Event listeners for game type selection
+
+//CLASSIC
 document.getElementById("play-classic").addEventListener('click', function () {
     clearDemo();
+
+    //Initialize player snake and fruit
     playerSnake = new Snake();
     snakeList.push(playerSnake);
     playerSnake.setDisplay();
-
-    setControls(playerSnake);
-    setAllClickListeners(playerSnake);
-
-    playerApple = new Fruit();
-    playerApple.setDisplay();
-
-    countdownTimer(gamePlayClassic);
-
-});
-
-document.getElementById("play-battle").addEventListener('click', function () {
-    clearDemo();
-    playerSnake = new Snake();
-    snakeList.push(playerSnake);
-    playerSnake.setDisplay();
-
+    
     playerApple = new Fruit();
     playerApple.setDisplay();
 
@@ -609,7 +623,34 @@ document.getElementById("play-battle").addEventListener('click', function () {
     setControls(playerSnake);
     setAllClickListeners(playerSnake);
 
-    //Initialize new AI Snake
+    //(Re)set scoreboard
+    scoreBoard.round++;
+    scoreBoard.resetScore();
+    toggleScoreDisplay(true);
+    document.getElementById("kills-board").style.visibility = "hidden";
+    updateScoreDisplay();
+
+    //Begin Classic
+    countdownTimer(gamePlayClassic);
+
+});
+
+//BATTLE SNAKES
+document.getElementById("play-battle").addEventListener('click', function () {
+    clearDemo();
+
+    //Initialize player snake and fruit
+    playerSnake = new Snake();
+    snakeList.push(playerSnake);
+    playerSnake.setDisplay();
+    playerApple = new Fruit();
+    playerApple.setDisplay();
+
+    //Initialize controls
+    setControls(playerSnake);
+    setAllClickListeners(playerSnake);
+
+    //Initialize new AI Snake and Fruit
     AI = new AISnake();
     snakeList.push(AI);
     AIapple = new Fruit();
@@ -617,6 +658,13 @@ document.getElementById("play-battle").addEventListener('click', function () {
     AI.setDisplay();
     AIapple.setDisplay();
 
+    //(Re)set scoreboard
+    scoreBoard.round++;
+    scoreBoard.resetScore();
+    toggleScoreDisplay(true);
+    document.getElementById("kills-board").style.visibility = "visible";
+    updateScoreDisplay();
+    
     //Began Battle Snakes
     countdownTimer(gamePlayBattle, 3, "Fight!");
 });
@@ -662,6 +710,8 @@ let gamePlayBattle = function () {
             if (playerSnake.isAtApple(playerApple)) {
                 playerApple.resetPosition();
                 playerSnake.pushSegment(currSnakeLastSeg);
+                scoreBoard.score++;
+                console.log(scoreBoard);
             }
 
             if (!AI.isDead) {
@@ -669,6 +719,7 @@ let gamePlayBattle = function () {
                     playerSnake.isInSnake(AI.position[0].i, AI.position[0].j, true)) {
                     console.log(`AI Ded`)
                     AI.kill();
+                    scoreBoard.kills++;
 
                     respawnTimer(function () {
                         AI = new AISnake();
@@ -692,6 +743,7 @@ let gamePlayBattle = function () {
             playerApple.setDisplay();
             AI.setDisplay();
             AIapple.setDisplay();
+            updateScoreDisplay();
         }
     }
 }
@@ -721,17 +773,19 @@ let gamePlayClassic = function () {
             if (playerSnake.isAtApple(playerApple)) {
                 playerApple.resetPosition();
                 playerSnake.pushSegment(currSnakeLastSeg);
+                scoreBoard.score++;
             }
             //Reset grid display
             clearGameBoardDisplay();
             //Show display
             playerSnake.setDisplay();
             playerApple.setDisplay();
+            updateScoreDisplay();
         }
     }
 }
 
-//------ KEYBOARD CONTROLS
+//------ USER CONTROLS
 
 //Assign keyboard controls
 function setControls(snakeObj) {
@@ -773,14 +827,8 @@ window.addEventListener("keydown", function (e) {
     }
 }, false);
 
-//Assign mouse controls
-//for each div
-//add click eventlistener 
-//setDirection(dir)
 
-
-
-
+//Set touch listeners for touchscreen support
 function setClickListener(i, j, dir, snakeObj) {
     let sq = getSquareNode(i, j)
     sq.addEventListener("touchstart", function () {
@@ -809,6 +857,7 @@ function setClickListener(i, j, dir, snakeObj) {
     });
 }
 
+//Set listeners based on gameboard
 function setAllClickListeners(snakeObj) {
     //North
     for (let idx = 0, len = gridSize - 1; idx < Math.floor(gridSize / 2); idx++, len--) {

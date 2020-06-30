@@ -23,7 +23,7 @@
     <div class="container">
         <div class="row">
             <div class="col-auto p-0 mx-auto">
-                <h2 id="game-title" class="pulsate">Snake</h2>
+                <h2 id="game-title">Snake</h2>
             </div>
         </div>
         <div class="row">
@@ -31,22 +31,19 @@
                 <div class="row game-select">
                     <div class="col selection">
                         <button id="play-classic">Classic</button>
-
                     </div>
                     <div class="col selection">
                         <button id="play-battle">Battle</button>
                     </div>
                 </div>
-
                 <div class="col" id="countdown">
                     <h2 id="countdown-display">&nbsp;</h2>
                 </div>
-
             </div>
         </div>
         <div class="row">
             <div class="col-auto p-0 mx-auto">
-                <h5 id="temp-buttons">&nbsp;</h5>
+                <!-- <h5 id="temp-buttons">&nbsp;</h5> -->
                 <!-- <button id="pause">pause</button> -->
                 <!-- <button id="play-classic">play classic snake</button> -->
                 <!-- <button id="play-battle">play battle snakes</button> -->
@@ -56,7 +53,26 @@
     <div class="container">
         <!-- Write your code here -->
         <div class="row">
+            <div class="col">
+            </div>
             <div class="col-auto p-0 mx-auto" id="game-board">
+            </div>
+            <div class="col" id="score-board">
+                <div class="row">
+                    <div class="col" >
+                        Round: <span id="round-display"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        Score: <span id="score-display"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col" id="kills-board">
+                        Kills: <span id="kills-display"></span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
