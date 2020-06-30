@@ -89,7 +89,7 @@ function translate(a, b, dir, distance = 1) {
 function countdownTimer(gamePlay, count=3, go="Go!"){
     let countdownInterval = setInterval(countdown,800);
     function countdown(){
-        let cddParent = document.getElementById("countdown-display").parentElement
+        let cddParent = document.getElementById("countdown");
         if(count===-1){
             clearInterval(countdownInterval);
             gamePlay();
@@ -107,20 +107,20 @@ function countdownTimer(gamePlay, count=3, go="Go!"){
     }
 }
 
-function respawnTimer(gamePlay, count=3, go="Go!"){
-    let countdownInterval = setInterval(countdown,800);
-    function countdown(){
-        let cddParent = document.getElementById("countdown-display").parentElement
+function respawnTimer(func, count=3, go="Go!"){
+    let cddParent = document.getElementById("countdown");
+    let countdownInterval = setInterval(countdown,1000);
+    function countdown(){    
         if(count===-1){
             clearInterval(countdownInterval);
-            gamePlay();
+            func();
             cddParent.innerHTML = "";
             count = 3;
         } else {
-            cddParent.innerHTML = "";
-            let h2 = document.createElement("h2");
+            cddParent.innerText = "";
+            let h2 = document.createElement("p");
             h2.id = "countdown-display"
-            h2.innerText = count===0 ? go : count;
+            h2.innerText = count===0 ? "New snake has arrived" : `${count}`;
             cddParent.appendChild(h2);
             h2.classList.add("fade-out");
             count--;
@@ -539,9 +539,24 @@ function demoSnake() {
 function clearDemo(){
     clearInterval(demoInterval);
     clearGameBoardDisplay();
-    document.querySelector("#game-title").style.zIndex = "0";
-    document.querySelector(".game-select").style.zIndex = "0";
+    toggleStartMenu();
 }
+
+function toggleStartMenu (){
+
+    let gt = document.querySelector("#game-title");
+    let gs = document.querySelector(".game-select");
+
+    if(gt.style.visibility=="hidden"){
+        gt.style.visibility="visible";
+        gs.style.visibility="visible";
+    } else {
+        gt.style.visibility="hidden";
+        gs.style.visibility="hidden";
+    }
+
+}
+
 
 
 
@@ -634,6 +649,7 @@ let gamePlayBattle = function () {
                 console.log(`Player Ded`);
             }
             clearInterval(battleInterval);
+            toggleStartMenu();
         } else {
             //Check conditions
 
@@ -648,11 +664,17 @@ let gamePlayBattle = function () {
                     playerSnake.isInSnake(AI.position[0].i, AI.position[0].j, true)) {
                     console.log(`AI Ded`)
                     AI.kill();
-                    setTimeout(function () {
+
+                    respawnTimer(function(){
                         AI = new AISnake();
                         AI.setDisplay();
                         AIapple.resetPosition();
-                    }, respawnDelay);
+                    },3,"");
+                    
+
+                    // setTimeout(function () {
+                        
+                    // }, respawnDelay);
                 } else if (AI.isAtApple(AIapple)) {
                     AIapple.resetPosition();
                     AI.pushSegment(currAILastSeg);
@@ -690,6 +712,7 @@ let gamePlayClassic = function () {
         ) {
             console.log(`Player Ded`);
             clearInterval(classicInterval)
+            toggleStartMenu();
         } else {
             if (playerSnake.isAtApple(playerApple)) {
                 playerApple.resetPosition();

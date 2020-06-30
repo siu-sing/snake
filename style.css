@@ -43,6 +43,8 @@ h2 {
     transform: translate(0,220px);
     z-index: 9;
     text-align: center;
+    line-height: 0;
+    border: 0;
     /* opacity:0.8; */
 }
 
