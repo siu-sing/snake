@@ -1,6 +1,10 @@
-    
+* {
+    font-family: 'Orbitron', sans-serif;
+    color: #E6FFFF;
+}
+
 html body {
-    background-color: #b3a996;
+    background-color: #0C142F;
 }
 h2 {
     font-size: 80px;
@@ -28,7 +32,7 @@ h2 {
 
 .selection:hover {
     top: -2px;
-    color: black;
+    color: E6FFFF;
     opacity: 1;
     text-decoration: underline;
     /* border: 1px solid black; */
@@ -53,8 +57,8 @@ h2 {
 }
 
 #game-board {
-    border: 3px solid #010101;
-    background-color: #f4e6b3;
+    border: 5px solid #E6FFFF;
+    background-color: #335584;
 }
 
 .fade-in{
@@ -67,7 +71,7 @@ h2 {
     }
 
 .fade-out{
-    color: #29383b;
+    color: #E6FFFF;
     /* color: blue; */
     opacity:0.0;
     animation: fadeOut ease-in 1s;

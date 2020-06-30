@@ -13,12 +13,18 @@ let snakeList = [];
 //Rounds
 let gameRound = 0;
 //Default snake colours
-let snakeColor = "rgba(41, 56, 59, 0.9)";
-let playerSnakeHeadColor = "hsl(110,39%,50%)";
-let AISnakeHeadColor = "hsl(261, 70%, 80%)";
+// let snakeColor = "rgba(52, 70, 90, 1)";
+let playerSnakeColor = "rgba(230, 255, 255,0.5)"
+let AISnakeColor = "rgba(255, 230, 77, 0.5)";
+// let playerSnakeHeadColor = "hsl(110,39%,50%)";
+let playerSnakeHeadColor = "#E6FFFF";
+// let AISnakeHeadColor = "hsl(261, 70%, 80%)";
+let AISnakeHeadColor = "#FFE64D";
 //Default fruit color
-let fruitColor = "hsl(110,70%,50%)";
-let AIfruitColor = "hsl(261, 79%, 50%)";
+// let fruitColor = "hsl(110,70%,50%)";
+let fruitColor = "#6FC3DF";
+// let AIfruitColor = "hsl(261, 79%, 50%)";
+let AIfruitColor = "#DF740C";
 //Score
 let score = 0;
 //directions
@@ -195,6 +201,7 @@ class Snake {
     constructor(i = start_i, j = start_j) {
         this.position = []; //array of coordinates
         this.headColor = playerSnakeHeadColor;
+        this.snakeColor = playerSnakeColor;
         this.direction = "e";
         this.isDead = false;
         //Baby snake
@@ -279,7 +286,7 @@ class Snake {
                 if (idx == 0) {
                     n.style.backgroundColor = this.headColor;
                 } else {
-                    n.style.backgroundColor = snakeColor;
+                    n.style.backgroundColor = this.snakeColor;
                 }
 
             });
@@ -334,6 +341,7 @@ class AISnake extends Snake {
     constructor(i = start_i - 5, j = start_j - 5) {
         super(i, j);
         this.headColor = AISnakeHeadColor;
+        this.snakeColor = AISnakeColor;
         this.position = [];
         for (let x = 0; x < startLength - 5; x++) {
             this.position.push(new Coordinate(i, j))
