@@ -783,7 +783,7 @@ window.addEventListener("keydown", function (e) {
 
 function setClickListener(i, j, dir, snakeObj) {
     let sq = getSquareNode(i, j)
-    sq.addEventListener("click", function () {
+    sq.addEventListener("touchstart", function () {
         switch (dir) {
             case "e": //east
                 if (snakeObj.direction != "w") {
