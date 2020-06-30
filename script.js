@@ -615,7 +615,7 @@ document.getElementById("play-classic").addEventListener('click', function () {
     playerSnake = new Snake();
     snakeList.push(playerSnake);
     playerSnake.setDisplay();
-    
+
     playerApple = new Fruit();
     playerApple.setDisplay();
 
@@ -702,6 +702,7 @@ let gamePlayBattle = function () {
                 console.log(`Player Ded`);
             }
             clearInterval(battleInterval);
+            animateGameboard("headShake");
             toggleStartMenu();
         } else {
             //Check conditions
@@ -718,6 +719,7 @@ let gamePlayBattle = function () {
                 if (isSnakeHitSelf(AI) ||
                     playerSnake.isInSnake(AI.position[0].i, AI.position[0].j, true)) {
                     console.log(`AI Ded`)
+                    animateGameboard("pulse");
                     AI.kill();
                     scoreBoard.kills++;
 
@@ -768,6 +770,7 @@ let gamePlayClassic = function () {
         if (isSnakeOOB(playerSnake) || isSnakeHitSelf(playerSnake)) {
             console.log(`Player Ded`);
             clearInterval(classicInterval)
+            animateGameboard("headShake");
             toggleStartMenu();
         } else {
             if (playerSnake.isAtApple(playerApple)) {
@@ -886,4 +889,14 @@ function setAllClickListeners(snakeObj) {
             setClickListener(idx, jdx, "e", snakeObj)
         }
     }
+}
+
+//------ ANIMATION / FX
+
+function animateGameboard(type="pulse"){
+    const element = document.querySelector('#game-board');
+    element.classList.add('animate__animated', `animate__${type}`, 'animate__faster');
+    element.addEventListener('animationend', () => {
+        element.classList.remove('animate__animated', `animate__${type}`, 'animate__faster');
+    });
 }

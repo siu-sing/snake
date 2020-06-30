@@ -94,3 +94,7 @@ h2 {
     line-height: 0;
     background-color: transparent;
 }
+
+:root {
+    --animate-duration: 0.3s;
+  }
