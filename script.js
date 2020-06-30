@@ -86,6 +86,49 @@ function translate(a, b, dir, distance = 1) {
     return coordinate;
 }
 
+function countdownTimer(gamePlay, count=3, go="Go!"){
+    let countdownInterval = setInterval(countdown,800);
+    function countdown(){
+        let cddParent = document.getElementById("countdown-display").parentElement
+        if(count===-1){
+            clearInterval(countdownInterval);
+            gamePlay();
+            cddParent.innerHTML = "";
+            count = 3;
+        } else {
+            cddParent.innerHTML = "";
+            let h2 = document.createElement("h2");
+            h2.id = "countdown-display"
+            h2.innerText = count===0 ? go : count;
+            cddParent.appendChild(h2);
+            h2.classList.add("fade-out");
+            count--;
+        }
+    }
+}
+
+function respawnTimer(gamePlay, count=3, go="Go!"){
+    let countdownInterval = setInterval(countdown,800);
+    function countdown(){
+        let cddParent = document.getElementById("countdown-display").parentElement
+        if(count===-1){
+            clearInterval(countdownInterval);
+            gamePlay();
+            cddParent.innerHTML = "";
+            count = 3;
+        } else {
+            cddParent.innerHTML = "";
+            let h2 = document.createElement("h2");
+            h2.id = "countdown-display"
+            h2.innerText = count===0 ? go : count;
+            cddParent.appendChild(h2);
+            h2.classList.add("fade-out");
+            count--;
+        }
+    }
+}
+
+
 //--DISPLAY DOM MANIPULATION
 //Set up game board
 function setUpGameBoard() {
@@ -530,44 +573,9 @@ document.getElementById("play-classic").addEventListener('click', function () {
     playerApple = new Fruit();
     playerApple.setDisplay();
     
-    // let count = 3;
-    // let countdownTimer = function(){
-    //     let countdownInterval = setInterval(countdown,900);
-    //     function countdown(){
-    //         if(count===0){
-    //             clearInterval(countdownInterval);
-    //             gamePlayClassic();
-    //         } else {
-    //             console.log(count);
-    //             count--;
-    //         }
-    //     }
-    // }
     countdownTimer(gamePlayClassic);
     
 });
-
-
-let countdownTimer = function(gamePlay, count=3, go="Go!"){
-    let countdownInterval = setInterval(countdown,800);
-    function countdown(){
-        if(count===-1){
-            clearInterval(countdownInterval);
-            gamePlay();
-            count = 3;
-        } else {
-            let cddParent = document.getElementById("countdown-display").parentElement
-            cddParent.innerHTML = "";
-            let h2 = document.createElement("h2");
-            h2.id = "countdown-display"
-            h2.innerText = count===0 ? go : count;
-            cddParent.appendChild(h2);
-            h2.classList.add("fade-out");
-            count--;
-        }
-    }
-}
-
 
 document.getElementById("play-battle").addEventListener('click', function () {
     clearDemo();
@@ -590,7 +598,7 @@ document.getElementById("play-battle").addEventListener('click', function () {
     AIapple.setDisplay();
 
     //Began Battle Snakes
-    countdownTimer(gamePlayBattle);
+    countdownTimer(gamePlayBattle,3,"Fight!");
 });
 
 //------ BATTLE SNAKES GAMEPLAY
