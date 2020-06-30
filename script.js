@@ -86,11 +86,12 @@ function translate(a, b, dir, distance = 1) {
     return coordinate;
 }
 
-function countdownTimer(gamePlay, count=3, go="Go!"){
-    let countdownInterval = setInterval(countdown,800);
-    function countdown(){
+function countdownTimer(gamePlay, count = 3, go = "Go!") {
+    let countdownInterval = setInterval(countdown, 800);
+
+    function countdown() {
         let cddParent = document.getElementById("countdown");
-        if(count===-1){
+        if (count === -1) {
             clearInterval(countdownInterval);
             gamePlay();
             cddParent.innerHTML = "";
@@ -99,7 +100,7 @@ function countdownTimer(gamePlay, count=3, go="Go!"){
             cddParent.innerHTML = "";
             let h2 = document.createElement("h2");
             h2.id = "countdown-display"
-            h2.innerText = count===0 ? go : count;
+            h2.innerText = count === 0 ? go : count;
             cddParent.appendChild(h2);
             h2.classList.add("fade-out");
             count--;
@@ -107,11 +108,12 @@ function countdownTimer(gamePlay, count=3, go="Go!"){
     }
 }
 
-function respawnTimer(func, count=3, go="Go!"){
+function respawnTimer(func, count = 3, go = "Go!") {
     let cddParent = document.getElementById("countdown");
-    let countdownInterval = setInterval(countdown,1000);
-    function countdown(){    
-        if(count===-1){
+    let countdownInterval = setInterval(countdown, 1000);
+
+    function countdown() {
+        if (count === -1) {
             clearInterval(countdownInterval);
             func();
             cddParent.innerHTML = "";
@@ -120,7 +122,7 @@ function respawnTimer(func, count=3, go="Go!"){
             cddParent.innerText = "";
             let h2 = document.createElement("p");
             h2.id = "countdown-display"
-            h2.innerText = count===0 ? "New snake has arrived" : `${count}`;
+            h2.innerText = count === 0 ? "New snake has arrived" : `${count}`;
             cddParent.appendChild(h2);
             h2.classList.add("fade-out");
             count--;
@@ -514,9 +516,10 @@ function demoSnake() {
     demoApple.color = AIfruitColor;
     demoAI.setDisplay();
     demoApple.setDisplay();
-    let gamePlayDemo = function(){
-        demoInterval = setInterval(step,clock);
-        function step(){
+    let gamePlayDemo = function () {
+        demoInterval = setInterval(step, clock);
+
+        function step() {
             let currAILastSeg = null;
             currAILastSeg = getLastSeg(demoAI.position);
             demoAI.autoMove(demoApple);
@@ -524,7 +527,7 @@ function demoSnake() {
                 demoApple.resetPosition();
                 demoAI.pushSegment(currAILastSeg);
             }
-            if(demoAI.position.length>=20){
+            if (demoAI.position.length >= 20) {
                 demoAI = new AISnake();
             }
             clearGameBoardDisplay();
@@ -536,23 +539,23 @@ function demoSnake() {
 }
 
 //Clear demo snake and title displays
-function clearDemo(){
+function clearDemo() {
     clearInterval(demoInterval);
     clearGameBoardDisplay();
     toggleStartMenu();
 }
 
-function toggleStartMenu (){
+function toggleStartMenu() {
 
     let gt = document.querySelector("#game-title");
     let gs = document.querySelector(".game-select");
 
-    if(gt.style.visibility=="hidden"){
-        gt.style.visibility="visible";
-        gs.style.visibility="visible";
+    if (gt.style.visibility == "hidden") {
+        gt.style.visibility = "visible";
+        gs.style.visibility = "visible";
     } else {
-        gt.style.visibility="hidden";
-        gs.style.visibility="hidden";
+        gt.style.visibility = "hidden";
+        gs.style.visibility = "hidden";
     }
 
 }
@@ -582,14 +585,15 @@ document.getElementById("play-classic").addEventListener('click', function () {
     playerSnake = new Snake();
     snakeList.push(playerSnake);
     playerSnake.setDisplay();
-    
+
     setControls(playerSnake);
+    setAllClickListeners(playerSnake);
 
     playerApple = new Fruit();
     playerApple.setDisplay();
-    
+
     countdownTimer(gamePlayClassic);
-    
+
 });
 
 document.getElementById("play-battle").addEventListener('click', function () {
@@ -597,12 +601,13 @@ document.getElementById("play-battle").addEventListener('click', function () {
     playerSnake = new Snake();
     snakeList.push(playerSnake);
     playerSnake.setDisplay();
-    
+
     playerApple = new Fruit();
     playerApple.setDisplay();
 
     //Initialize controls
     setControls(playerSnake);
+    setAllClickListeners(playerSnake);
 
     //Initialize new AI Snake
     AI = new AISnake();
@@ -613,7 +618,7 @@ document.getElementById("play-battle").addEventListener('click', function () {
     AIapple.setDisplay();
 
     //Began Battle Snakes
-    countdownTimer(gamePlayBattle,3,"Fight!");
+    countdownTimer(gamePlayBattle, 3, "Fight!");
 });
 
 //------ BATTLE SNAKES GAMEPLAY
@@ -665,15 +670,15 @@ let gamePlayBattle = function () {
                     console.log(`AI Ded`)
                     AI.kill();
 
-                    respawnTimer(function(){
+                    respawnTimer(function () {
                         AI = new AISnake();
                         AI.setDisplay();
                         AIapple.resetPosition();
-                    },3,"");
-                    
+                    }, 3, "");
+
 
                     // setTimeout(function () {
-                        
+
                     // }, respawnDelay);
                 } else if (AI.isAtApple(AIapple)) {
                     AIapple.resetPosition();
@@ -697,7 +702,7 @@ let gamePlayClassic = function () {
     classicInterval = setInterval(step, clock);
 
     function step() {
-        
+
         //Store position of last segment of snake
         let currSnakeLastSeg = null;
         if (!playerSnake.isDead) {
@@ -708,8 +713,7 @@ let gamePlayClassic = function () {
         playerSnake.move();
 
         //Player Snake Dies end interval
-        if (isSnakeOOB(playerSnake) || isSnakeHitSelf(playerSnake)
-        ) {
+        if (isSnakeOOB(playerSnake) || isSnakeHitSelf(playerSnake)) {
             console.log(`Player Ded`);
             clearInterval(classicInterval)
             toggleStartMenu();
@@ -769,3 +773,68 @@ window.addEventListener("keydown", function (e) {
     }
 }, false);
 
+//Assign mouse controls
+//for each div
+//add click eventlistener 
+//setDirection(dir)
+
+
+
+
+function setClickListener(i, j, dir, snakeObj) {
+    let sq = getSquareNode(i, j)
+    sq.addEventListener("click", function () {
+        switch (dir) {
+            case "e": //east
+                if (snakeObj.direction != "w") {
+                    snakeObj.setDirection("e");
+                }
+                break;
+            case "n": //north
+                if (snakeObj.direction != "s") {
+                    snakeObj.setDirection("n");
+                }
+                break;
+            case "w": //west
+                if (snakeObj.direction != "e") {
+                    snakeObj.setDirection("w");
+                }
+                break;
+            case "s": //south
+                if (snakeObj.direction != "n") {
+                    snakeObj.setDirection("s");
+                }
+                break;
+        }
+    });
+}
+
+function setAllClickListeners(snakeObj) {
+    //North
+    for (let idx = 0, len = gridSize - 1; idx < Math.floor(gridSize / 2); idx++, len--) {
+        for (let jdx = idx + 1; jdx < len; jdx++) {
+            setClickListener(idx, jdx, "n", snakeObj)
+        }
+    }
+
+    //South
+    for (let idx = gridSize - 1, len = gridSize - 1; idx > Math.floor(gridSize / 2); idx--, len--) {
+        for (let jdx = gridSize - len; jdx < len; jdx++) {
+            setClickListener(idx, jdx, "s", snakeObj)
+        }
+    }
+
+    //West
+    for (let jdx = 0, len = gridSize - 1; jdx < Math.floor(gridSize / 2); jdx++, len--) {
+        for (let idx = jdx + 1; idx < len; idx++) {
+            setClickListener(idx, jdx, "w", snakeObj)
+        }
+    }
+
+    //East
+    for (let jdx = gridSize - 1, len = gridSize - 1; jdx > Math.floor(gridSize / 2); jdx--, len--) {
+        for (let idx = gridSize - len; idx < len; idx++) {
+            setClickListener(idx, jdx, "e", snakeObj)
+        }
+    }
+}

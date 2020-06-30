@@ -31,6 +31,7 @@ h2 {
     top: -2px;
     color: black;
     opacity: 1;
+    text-decoration: underline;
     /* border: 1px solid black; */
 }
 
