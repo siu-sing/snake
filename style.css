@@ -5,6 +5,7 @@
 
 html body {
     background-color: #0C142F;
+    overscroll-behavior: contain;
 }
 h2 {
     font-size: 80px;
