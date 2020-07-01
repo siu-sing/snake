@@ -45,7 +45,7 @@ For this version, I decided to use an AI Snake instead of having multi human pla
     - AI Snake
         - AI Snake is "fruit" seeking, making its movements more natural and less erratic
         - Able to respawn after death with delay
-        - Grows at with the same mechanics as player snake
+        - Grows with the same mechanics as player snake
         - (Further) AI is defensive and able to avoid player snake
         - (Further) AI is offensive and able to trap player snake
         - (Further) Multiple AI snakes
@@ -81,7 +81,7 @@ Bootstrap was used to organize and centralize the game board and additional CSS 
 #### Game Objects - Coordinate, Snake, Fruit
 Game components were implemented as Classes to allow multiple instances of each object. DOM manipulation functions were directly included into the class methods for convenience.
 
-The `Coordinate` class is represents the position of a fruit or a segment of snake. The `dir` property  is used to represent the direction of that particular snake segment (used for AI snake navigation).
+The `Coordinate` class represents the position of a fruit or a segment of snake. The `dir` property  is used to represent the direction of that particular snake segment (used for AI snake navigation).
 
 ```js
 class Coordinate {
@@ -131,14 +131,14 @@ The constructor includes a for loop that creates a baby snake of `startLength`, 
 
 The `position` property stores an array of coordinate objects representing the coordinate and direction of each segment of the snake.  
 
-The `direction` property keeps track of the current bearing of the snake and takes the values `n`, `s`, `e`, or `w`. This can be dynamically changed by the event listener on the user's arrow keys.
-
-After instantiation, the `move()` method in the snake is called at every 100ms interval to update the position of the snake based on its `position` and `direction` values. 
-
 ```js
 // a 4 unit snake with its head at position (24,5) on the grid, and all segments heading east.
 position: [ {i:24, j:5, dir:"e"}, {i:24, j:4, dir:"e"}, {i:24, j:3, dir:"e"}, {i:24, j:2, dir:"e"} ] 
 ```
+
+The `direction` property keeps track of the current bearing of the snake and takes the values `n`, `s`, `e`, or `w`. This can be dynamically changed by the event listener on the user's arrow keys.
+
+After instantiation, the `move()` method in the snake is called at every 100ms interval to update the position of the snake based on its `position` and `direction` values. 
 
 Every time `move()` is executed:
 1. Starting from the tail, each segment's coordinate and direction is updated to the one ahead of it.
@@ -187,10 +187,10 @@ In order to solve this in a more generic way, I had to consider the relative pos
 
 #### AI Snake one unit length
 
-With a simple "snake" of 1 unit in length, and the target fruit is N-E relative to the snake head, the psuedo code to cater for above will look like this:
+With a simple "snake" of 1 unit in length, and the target fruit is N-E relative to the snake head, the psuedo code to determine the best direction would look like this:
 ```
 //Psuedocode to handle first condition
-At ever refresh interval,
+At every refresh interval,
 IF fruit is N-E with respect to snake
     IF snake is moving E
         IF snake is vertically aligned with fruit
@@ -209,7 +209,7 @@ Given the basic 2-dimensional game board we will only need to replicate this log
 
 #### AI Snake of more than one unit length
 
-However, as the AI snake grows in length, and given the randomness of fruit respawn, snake would inadvertently run into itself. The suggested direction will then need to be modified when this happens, and this will be dependent on the direction of the segment it is about to collide into.
+However, as the AI snake grows in length, and given the randomness of fruit respawn, snake would inadvertently run into itself. The suggested direction will then need to be modified when this happens, and this will be dependent on the direction of the snake segment it is about to collide into.
 
 The following psuedo code handles this:
 ```
@@ -229,4 +229,9 @@ Again, this would be replicated symmetrically in 4 directions. Code snippet [her
 - Snake tail colors were given 50% opacity of their head colors to appear as though they are "trails" left by the snake head
 - Touch event listeners were added on the game screen to allow for playing on mobile/touch screens (buggy on several devices)
 
-
+## Further Work?
+- Make AI more defensive and able to avoid player snake
+- Make AI more offensive and able to trap player snake
+- Multiple AI snakes simultaneously
+- Dynamic resizing of game area during game play
+- Use swipes instead of touches for mobile/touch screen support
