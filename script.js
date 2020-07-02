@@ -13,21 +13,16 @@ let snakeList = [];
 //Rounds
 let gameRound = 0;
 //Default snake colours
-// let snakeColor = "rgba(52, 70, 90, 1)";
 let playerSnakeColor = "rgba(230, 255, 255,0.5)"
 let AISnakeColor = "rgba(255, 230, 77, 0.5)";
-// let playerSnakeHeadColor = "hsl(110,39%,50%)";
 let playerSnakeHeadColor = "#E6FFFF";
-// let AISnakeHeadColor = "hsl(261, 70%, 80%)";
 let AISnakeHeadColor = "#FFE64D";
 //Default fruit color
-// let fruitColor = "hsl(110,70%,50%)";
 let fruitColor = "#6FC3DF";
-// let AIfruitColor = "hsl(261, 79%, 50%)";
 let AIfruitColor = "#DF740C";
 //Score
 let score = 0;
-//directions
+//Directions
 const D = ['n', 'e', 's', 'w'];
 
 //---CONVENIENCE FUNCTIONS
@@ -58,7 +53,7 @@ function getLastSeg(posArray) {
     return seg;
 }
 
-//Translates a given coordinate base on given direction and distance
+//Translates a given coordinate based on given direction and distance
 function translate(a, b, dir, distance = 1) {
     let coordinate = {
         i: null,
@@ -85,6 +80,8 @@ function translate(a, b, dir, distance = 1) {
     return coordinate;
 }
 
+
+//------ INFO DISPLAY FUNCTIONS
 function countdownTimer(gamePlay, count = 3, go = "Go!") {
     let countdownInterval = setInterval(countdown, 800);
 
@@ -106,6 +103,7 @@ function countdownTimer(gamePlay, count = 3, go = "Go!") {
         }
     }
 }
+
 
 function respawnTimer(func, count = 3, go = "Go!") {
     let cddParent = document.getElementById("countdown");
@@ -143,6 +141,7 @@ function killAnimate(playerDied = false, type = "fadeOut"){
     cddParent.appendChild(h2);
 }
 
+//Display instructions on mouseover/out
 let instructions = document.getElementById("instructions");
 instructions.innerText = "";
 instructions.style.visibility = "hidden";
@@ -606,6 +605,7 @@ function demoSnake() {
     demoAI = new AISnake();
     snakeList.push(demoAI);
     demoApple = new Fruit();
+    demoApple.resetPosition();
     demoApple.color = AIfruitColor;
     demoAI.setDisplay();
     demoApple.setDisplay();
