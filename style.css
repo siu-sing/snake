@@ -1,3 +1,7 @@
+:root {
+    --animate-duration: 0.3s;
+  }
+
 * {
     font-family: 'Orbitron', sans-serif;
     color: #E6FFFF;
@@ -43,7 +47,7 @@ h2 {
     all:unset;
 }
 
-#countdown-display, #respawn-countdown {
+#countdown-display, #respawn-countdown, #kill-animation {
     position: relative;
     transform: translate(0,190px);
     z-index: 9;
@@ -51,6 +55,12 @@ h2 {
     line-height: 0;
     border: 0;
     /* opacity:0.8; */
+    --animate-duration: 2s;
+
+}
+
+#kill-animation {
+    transform: translate(0,200px);
 }
 
 #score-board {
@@ -100,6 +110,4 @@ h2 {
     background-color: transparent;
 }
 
-:root {
-    --animate-duration: 0.3s;
-  }
+

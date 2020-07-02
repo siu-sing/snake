@@ -124,9 +124,23 @@ function respawnTimer(func, count = 3, go = "Go!") {
             h2.innerText = count === 0 ? "A new snake has arrived." : `${count}`;
             cddParent.appendChild(h2);
             h2.classList.add("fade-out");
-            count--;
+            count--; 
         }
     }
+}
+
+function killAnimate(playerDied = false, type = "fadeOut"){
+    let cddParent = document.getElementById("countdown");
+    cddParent.innerText = "";
+    let h2 = document.createElement("p");
+    h2.id = "kill-animation"
+    h2.innerText = playerDied ? "You died." : "Good Kill!";
+    h2.classList.add('animate__animated', `animate__${type}`);
+    h2.addEventListener('animationend', () => {
+        h2.classList.remove('animate__animated', `animate__${type}`, 'animate__slower');
+        cddParent.innerText = "";
+    });
+    cddParent.appendChild(h2);
 }
 
 
@@ -722,8 +736,10 @@ let gamePlayBattle = function () {
             if (playerSnake.position[0].i == AI.position[0].i &&
                 playerSnake.position[0].i == AI.position[0].i) {
                 console.log("Head on collision")
+                killAnimate(true);
             } else {
                 console.log(`Player Ded`);
+                killAnimate(true);
             }
             clearInterval(battleInterval);
             animateGameboard("headShake");
@@ -745,6 +761,7 @@ let gamePlayBattle = function () {
                 || isSnakeOOB(AI)) {
                     console.log(`AI Ded`)
                     animateGameboard("pulse");
+                    killAnimate();
                     AI.kill();
                     scoreBoard.kills++;
 
@@ -790,6 +807,7 @@ let gamePlayClassic = function () {
         //Player Snake Dies end interval
         if (isSnakeOOB(playerSnake) || isSnakeHitSelf(playerSnake)) {
             console.log(`Player Ded`);
+            killAnimate(true);
             clearInterval(classicInterval)
             animateGameboard("headShake");
             toggleStartMenu();
@@ -920,6 +938,5 @@ function animateGameboard(type = "pulse") {
         element.classList.remove('animate__animated', `animate__${type}`, 'animate__faster');
     });
 }
-
 
 

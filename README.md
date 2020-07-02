@@ -119,7 +119,7 @@ class Snake {
         };
     }
     move(){}    //Moves snake based on current direction
-    pushSegment(coordinate) //Adds a new segment at the tail based on coordinate
+    pushSegment(coordinate){} //Adds a new segment at the tail based on coordinate
     setDisplay(){}  //Displays the snake in the DOM
     isInSnake(i,j,includeHead=false){}  //Checks if i,j is within the snake
     isAtApple(fruitObj){}   //Checks if the snakehead is in the fruitObj
@@ -153,8 +153,8 @@ This ensures that the snake constantly follows through the trail of its head, wh
 - An AI Snake (in yellow) is added as an obstacle/enemy for the player to avoid/kill
 - The AI Snake generally minds its own business and blindly seeks for its fruit (in orange), it also grows, dies with the same rules as player snake
 - The player snake can kill the AI Snake by causing the AI Snake to collide into the players body
-- Upon death, the AI Snake regenerates after 4 seconds
-- Each refresh interval now checks for collisions between snakes
+- Upon death, the AI Snake regenerates after a 4 second delay
+- Each refresh interval now has an additional check for collisions between snakes
 
 
 The Snake game mechanics largely remain the same in this version. The only new addition was an AI Snake which gives the player a "live" and moving obstacle to avoid or destroy.
@@ -209,7 +209,7 @@ Given the basic 2-dimensional game board we will only need to replicate this log
 
 #### AI Snake of more than one unit length
 
-However, as the AI snake grows in length, and given the randomness of fruit respawn, snake would inadvertently run into itself. The suggested direction will then need to be modified when this happens, and this will be dependent on the direction of the snake segment it is about to collide into.
+However, as the AI snake grows in length, and given the randomness of fruit respawn, snake would inadvertently run into its own body. The suggested direction will then need to be modified when this happens, and this will be dependent on the direction of the snake segment it is about to collide into.
 
 The following psuedo code handles this:
 ```
