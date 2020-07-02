@@ -60,7 +60,22 @@ h2 {
 }
 
 #kill-animation {
+    position: relative;
     transform: translate(0,200px);
+}
+
+.instructions-display{
+    height:0;
+}
+
+#instructions {
+    position: relative;
+    transform: translate(0,210px);
+    z-index: 9;
+    line-height: 0;
+    text-align: center;
+    border: 0;
+    opacity: 0.8;
 }
 
 #score-board {

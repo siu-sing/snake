@@ -143,6 +143,33 @@ function killAnimate(playerDied = false, type = "fadeOut"){
     cddParent.appendChild(h2);
 }
 
+let instructions = document.getElementById("instructions");
+instructions.innerText = "";
+instructions.style.visibility = "hidden";
+
+let pc = document.getElementById("play-classic");
+pc.onmouseover = function(){
+    instructions.innerText = "Play Classic Snake."
+    instructions.classList.add('animate__animated', `animate__fadeIn`);
+    instructions.style.visibility = "visible";
+    pc.onmouseout = function (){
+        instructions.classList.remove('animate__animated', `animate__fadeIn`);
+        instructions.style.visibility = "hidden";
+    }
+};
+let pb = document.getElementById("play-battle");
+pb.onmouseover = function(){
+    instructions.innerText = "Battle against an AI Snake."
+    instructions.classList.add('animate__animated', `animate__fadeIn`);
+    instructions.style.visibility = "visible";
+    pb.onmouseout = function (){
+        instructions.classList.remove('animate__animated', `animate__fadeIn`);
+        instructions.style.visibility = "hidden";
+    }
+};
+
+
+
 
 //--DISPLAY DOM MANIPULATION
 //Set up game board
