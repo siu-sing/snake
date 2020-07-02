@@ -228,13 +228,36 @@ Again, this would be replicated symmetrically in 4 directions. Code snippet [her
 - Countdown timers with fade out animations were used to give players time to anticipate game starts/AI respawns
 - Snake tail colors were given 50% opacity of their head colors to appear as though they are "trails" left by the snake head
 - Touch event listeners were added on the game screen to allow for playing on mobile/touch screens (buggy on several devices)
+    - <img src="./toucheventlisteners.png" width="250"> 
 
-## Further Work?
-- Make AI more defensive and able to avoid player snake
-- Make AI more offensive and able to trap player snake
-- Multiple AI snakes simultaneously
+
+## Other Challenges
+- Spent quite a bit of time of figuring out the right CSS, HTML to get display right. Have multiple dom display functions doing similar things. Would need to figure out a more functional way of manipulating dom.
+- Generating random location respawn for fruit was not trivial.
+    - Initial logic: 
+    ```
+    DO
+        Generate random coordinate on game board using Math.rand()
+    WHILE (coordinate generated lies within a snake)
+    //Causes browser to hang if while loop does not exit quickly
+    ```
+    - Revamped logic
+    ```
+    //Works fine - requires multiple nested for-loops.
+    Create array of all possible coordinates
+    FOR each snake segment on the board, check and remove coordinates from the array that are occupied
+    Random select the resulting array
+    ```
+
+## Future Work?
+- Improve AI Snake
+    - More defensive and able to avoid player snake
+    - More offensive and able to trap player snake
+    - Multiple AI snakes simultaneously
+    - Random respawn location
 - Dynamic resizing of game area during game play
-- Use swipes instead of touches for mobile/touch screen support
+- Use swipes instead of touches for mobile/touch screen support. Some friends mentioned that their thumbs were in the way of the screen.
+- More exciting animation on deaths, kills
 
 ### Existing issues
 - ~~Fruit reset function is buggy - occassionally resets in snake body~~ Fixed respawn logic
