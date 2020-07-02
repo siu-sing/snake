@@ -235,3 +235,11 @@ Again, this would be replicated symmetrically in 4 directions. Code snippet [her
 - Multiple AI snakes simultaneously
 - Dynamic resizing of game area during game play
 - Use swipes instead of touches for mobile/touch screen support
+
+### Existing issues
+- ~~Fruit reset function is buggy - occassionally resets in snake body~~ Fixed respawn logic
+- ~~AI Snake at longer lengths sometimes passes thru itself~~ Set to kill 
+
+
+https://stackoverflow.com/questions/8916620/disable-arrow-key-scrolling-in-users-browser
+

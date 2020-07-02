@@ -51,15 +51,10 @@ function copyPosArray(original) {
 
 //Get last segment object of given position array
 function getLastSeg(posArray) {
-    let seg = {
-        i: null,
-        j: null,
-        dir: null
-    }
+    let seg = new Coordinate(null, null, null)
     seg.i = posArray[posArray.length - 1].i;
     seg.j = posArray[posArray.length - 1].j;
     seg.dir = posArray[posArray.length - 1].dir;
-
     return seg;
 }
 
@@ -154,13 +149,13 @@ setUpGameBoard();
 
 //---SCORING
 let scoreBoard = {
-    round:0,
-    score:0,
-    kills:0,
-    resetScore: function(){
+    round: 0,
+    score: 0,
+    kills: 0,
+    resetScore: function () {
         // this.round=0;
-        this.score=0;
-        this.kills=0;
+        this.score = 0;
+        this.kills = 0;
     }
 }
 
@@ -168,21 +163,21 @@ function updateScoreDisplay() {
     let rd = document.getElementById("round-display");
     let sd = document.getElementById("score-display");
     let kd = document.getElementById("kills-display");
-    rd.innerText=scoreBoard.round;
-    sd.innerText=scoreBoard.score;
-    kd.innerText=scoreBoard.kills;
+    rd.innerText = scoreBoard.round;
+    sd.innerText = scoreBoard.score;
+    kd.innerText = scoreBoard.kills;
 }
 
 //Display=true will force set it to display
-function toggleScoreDisplay(display=false) {
+function toggleScoreDisplay(display = false) {
     let sb = document.getElementById("score-board");
-    if (display){
-        sb.style.visibility="visible";
+    if (display) {
+        sb.style.visibility = "visible";
     } else {
-        if(sb.style.visibility=="visible"){
-            sb.style.visibility="hidden";    
+        if (sb.style.visibility == "visible") {
+            sb.style.visibility = "hidden";
         } else {
-            sb.style.visibility="visible";    
+            sb.style.visibility = "visible";
         }
     }
 }
@@ -453,7 +448,7 @@ class AISnake extends Snake {
                                 break;
                             case "s":
                             case "n":
-                                this.direction = this.position[this.positionIndex(newPos.i, newPos.j) + 1].dir == "w" ? "e" : "w";
+                                this.direction = this.position[this.positionIndex(newPos.i, newPos.j) - 1].dir == "w" ? "e" : "w";
                                 break;
                         }
                         break;
@@ -468,7 +463,7 @@ class AISnake extends Snake {
                                 break;
                             case "e":
                             case "w":
-                                this.direction = this.position[this.positionIndex(newPos.i, newPos.j) + 1].dir == "s" ? "n" : "s";
+                                this.direction = this.position[this.positionIndex(newPos.i, newPos.j) - 1].dir == "s" ? "n" : "s";
                                 break;
 
                         }
@@ -521,15 +516,30 @@ class Fruit {
 //Generates a random coordinate without any snake bodies
 function getEmptyCoordinate() {
     if (snakeList.length > 0) {
-        let success = true;
-        let c = null;
-        do {
-            c = new Coordinate(Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize))
-            snakeList.forEach(s => function () {
-                success = !s.isInSnake(c.i, c.j, true)
+        //GENERATE INITIAL LIST OF POSSIBLE COORDINATES
+        let possibleCoords = [];
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                possibleCoords.push(new Coordinate(i, j))
+            }
+        }
+        
+        //FOR EACH SNAKE IN SNAKELIST
+        snakeList.forEach(s => {
+            //FOR EACH POSITION IN SNAKE
+            s.position.forEach(c => {
+                //COMPARE WITH EVERY VALUE IN POSSIBLE COORDINATES 
+                possibleCoords.forEach((pc, idx) => {
+                    //IF MATCHES, REMOVE FROM POSSIBLE COORDINDATES
+                    if (c.i == pc.i && c.j == pc.j) {
+                        possibleCoords.splice(idx, 1);
+                    }
+                });
             });
-        } while (success = false);
-        return c;
+        });
+
+        let randIdx = Math.floor(Math.random()*possibleCoords.length);
+        return possibleCoords[randIdx];
     } else {
         return new Coordinate(Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize));
     }
@@ -549,10 +559,12 @@ function clearGameBoardDisplay() {
 
 let demoInterval = null;
 let demoAI = null;
+let demoApple = null;
 demoSnake();
 function demoSnake() {
     demoAI = new AISnake();
-    let demoApple = new Fruit();
+    snakeList.push(demoAI);
+    demoApple = new Fruit();
     demoApple.color = AIfruitColor;
     demoAI.setDisplay();
     demoApple.setDisplay();
@@ -567,8 +579,11 @@ function demoSnake() {
                 demoApple.resetPosition();
                 demoAI.pushSegment(currAILastSeg);
             }
-            if (demoAI.position.length >= 20) {
+            if (isSnakeHitSelf(demoAI) ||
+                demoAI.position.length >= 50 ||
+                isSnakeOOB(demoAI)) {
                 demoAI = new AISnake();
+                // animateGameboard("pulse");
             }
             clearGameBoardDisplay();
             demoAI.setDisplay();
@@ -580,6 +595,7 @@ function demoSnake() {
 
 //Clear demo snake and title displays
 function clearDemo() {
+    snakeList = [];
     clearInterval(demoInterval);
     clearGameBoardDisplay();
     toggleStartMenu();
@@ -672,7 +688,7 @@ document.getElementById("play-battle").addEventListener('click', function () {
     toggleScoreDisplay(true);
     document.getElementById("kills-board").style.visibility = "visible";
     updateScoreDisplay();
-    
+
     //Began Battle Snakes
     countdownTimer(gamePlayBattle, 3, "Fight!");
 });
@@ -724,8 +740,9 @@ let gamePlayBattle = function () {
             }
 
             if (!AI.isDead) {
-                if (isSnakeHitSelf(AI) ||
-                    playerSnake.isInSnake(AI.position[0].i, AI.position[0].j, true)) {
+                if (isSnakeHitSelf(AI) 
+                || playerSnake.isInSnake(AI.position[0].i, AI.position[0].j, true)
+                || isSnakeOOB(AI)) {
                     console.log(`AI Ded`)
                     animateGameboard("pulse");
                     AI.kill();
@@ -737,10 +754,6 @@ let gamePlayBattle = function () {
                         AIapple.resetPosition();
                     }, 3, "");
 
-
-                    // setTimeout(function () {
-
-                    // }, respawnDelay);
                 } else if (AI.isAtApple(AIapple)) {
                     AIapple.resetPosition();
                     AI.pushSegment(currAILastSeg);
@@ -900,11 +913,13 @@ function setAllClickListeners(snakeObj) {
 }
 
 //------ ANIMATION / FX
-
-function animateGameboard(type="pulse"){
+function animateGameboard(type = "pulse") {
     const element = document.querySelector('#game-board');
     element.classList.add('animate__animated', `animate__${type}`, 'animate__faster');
     element.addEventListener('animationend', () => {
         element.classList.remove('animate__animated', `animate__${type}`, 'animate__faster');
     });
 }
+
+
+
