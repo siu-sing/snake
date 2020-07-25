@@ -1,6 +1,6 @@
 # Snake
 ## Introduction
-Project 1 for SEI-23
+Classic Snake game with an added AI Snake player. Built with JavaScript.
 
 Game is hosted here: [Snake](https://siu-sing.github.io/snake/)
 
